@@ -1,0 +1,12 @@
+name = "oasis"
+type = "javascript"
+account_id = "96bea87fe68d650f41deb5e2883bce89"
+zone_id = ""
+route = ""
+workers_dev = true
+compatibility_date = "2021-10-08"
+
+[build]
+command = "npm install && npm run build"
+[build.upload]
+format = "service-worker"
