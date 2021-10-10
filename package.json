@@ -5,6 +5,7 @@
   "main": "dist/worker.js",
   "scripts": {
     "build": "webpack",
+    "dev": "wrangler dev",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "test": "jest --config jestconfig.json --verbose"
@@ -38,7 +39,6 @@
     "webpack-cli": "^4.9.0"
   },
   "dependencies": {
-    "@cfworker/uuid": "^1.9.1",
-    "cookie": "^0.4.1"
+    "worktop": "^0.7.3"
   }
 }
