@@ -7,7 +7,7 @@ interface GitHubUser {
   login: string
 }
 
-interface User {
+export interface User {
   id: string
   login: string
   namespaces?: Namespace[]
@@ -19,9 +19,14 @@ interface Namespace {
 
 export const createUser = async (gitHubUser: GitHubUser): Promise<User> => {
   const { id, login } = gitHubUser
-  await KV_USERS.put(id, JSON.stringify({ id, login }))
+  const existingUser = await getUser(id)
 
-  return { id, login }
+  if (!existingUser) {
+    await KV_USERS.put(id, JSON.stringify({ id, login }))
+    return { id, login }
+  }
+
+  return existingUser
 }
 
 export const getUser = async (userId?: string): Promise<User | null> => {
@@ -59,12 +64,26 @@ export const addNamespace = async (
   return null
 }
 
+export const getNamespace = async (
+  userId: string,
+  namespaceId: string,
+): Promise<Namespace | null> => {
+  const user = await getUser(userId)
+
+  if (user && user.namespaces && user.namespaces.length !== 0) {
+    return user.namespaces.find((ns) => ns.id === namespaceId) ?? null
+  }
+
+  return null
+}
+
 export const removeNamespace = async (
   userId: string,
   namespaceId: string,
 ): Promise<boolean> => {
   const user = await getUser(userId)
-  const hasNamespace = user?.namespaces?.some((ns) => ns.id === namespaceId) ?? false
+  const hasNamespace =
+    user?.namespaces?.some((ns) => ns.id === namespaceId) ?? false
 
   if (user && user.namespaces && hasNamespace) {
     user.namespaces = user.namespaces.filter((ns) => ns.id !== namespaceId)

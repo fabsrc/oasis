@@ -1,12 +1,20 @@
 import { Router, listen } from 'worktop'
+import { stringify as yamlStringify } from 'yaml'
 import type { KV } from 'worktop/kv'
+import { createSchema, deleteSchema, getSchema } from './schema'
 import {
   createSession,
   deleteSession,
   getSession,
   SESSION_COOKIE_NAME,
 } from './session'
-import { addNamespace, createUser, getUser, removeNamespace } from './user'
+import {
+  addNamespace,
+  createUser,
+  getNamespace,
+  getUser,
+  removeNamespace,
+} from './user'
 
 declare const GITHUB_CLIENT_ID: string
 declare const GITHUB_CLIENT_SECRET: string
@@ -139,6 +147,117 @@ API.add('DELETE', '/:user/:namespace', async (request, response) => {
   }
 
   return response.send(400, { message: 'Invalid namespace' })
+})
+
+API.add('PUT', '/:user/:namespace/:schema', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user, namespace, schema } = request.params
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  const userNamespace = await getNamespace(sessionUser.id, namespace)
+
+  if (!userNamespace) {
+    return response.send(400, { message: 'Invalid namespace' })
+  }
+
+  try {
+    // TODO: Add OAS schema validation
+    const schemaData = await request.body.json()
+    if (!schemaData) {
+      return response.send(400, { message: 'Invalid schema' })
+    }
+
+    const newSchema = await createSchema(
+      sessionUser,
+      namespace,
+      schema,
+      schemaData,
+    )
+
+    return response.send(201, newSchema)
+  } catch (error) {
+    return response.send(500, { message: (error as Error).message })
+  }
+})
+
+API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user, namespace, schema } = request.params
+
+  const [schemaId, extension = 'html'] = schema.split('.')
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  const schemaData = await getSchema(sessionUser, namespace, schemaId)
+
+  if (!schemaData) {
+    return response.send(404, { message: 'Not found' })
+  }
+
+  if (extension === 'json') {
+    return response.send(200, schemaData, {
+      'content-type': 'application/json',
+    })
+  }
+
+  if (extension === 'yaml' || extension === 'yml') {
+    return response.send(200, yamlStringify(schemaData), {
+      'content-type': 'text/yaml',
+    })
+  }
+
+  if (extension === 'html' || extension === 'htm') {
+    return response.send(
+      200,
+      `
+    <html>
+    <head>
+    <title>Schema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.52.3/swagger-ui.min.css" integrity="sha512-dFuohqVso7kItN2ft/glXFWpU3ZKdGsmV6HL3l7Vxu39syv/mfnp+HKoGwMUtmrlOapINWzSlIHiiC3q0CZ/GA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    </head>
+    <body>
+      <div id="swagger-ui"></div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.52.3/swagger-ui-bundle.min.js" integrity="sha512-ijA62nAx0v8vVbWF4Zx+robHQOdvN+PbArQBvCAciDS3k4sHtefbL8flGVurIkKLu/HucFqskP+dXDe6+I1GTg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script>
+        const ui = SwaggerUIBundle({
+          url: \`\${window.location.protocol}//\${window.location.host}/${user}/${namespace}/${schemaId}.json\`,
+          dom_id: '#swagger-ui',
+          deepLinking: true,
+        })
+      </script>
+    </body>
+    </html>
+    `,
+      { 'content-type': 'text/html' },
+    )
+  }
+
+  return response.send(400, { message: 'Invalid request' })
+})
+
+API.add('DELETE', '/:user/:namespace/:schema', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user, namespace, schema } = request.params
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  const result = await deleteSchema(sessionUser, namespace, schema)
+
+  if (result) {
+    return response.send(204)
+  }
+
+  return response.send(400, { message: 'Invalid schema' })
 })
 
 listen(API.run)
