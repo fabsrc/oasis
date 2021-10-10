@@ -6,6 +6,7 @@ import {
   getSession,
   SESSION_COOKIE_NAME,
 } from './session'
+import { addNamespace, createUser, getUser, removeNamespace } from './user'
 
 declare const GITHUB_CLIENT_ID: string
 declare const GITHUB_CLIENT_SECRET: string
@@ -23,8 +24,7 @@ API.add('GET', '/logout', async (request, response) => {
   await deleteSession(request)
   return response.send(302, null, {
     location: '/',
-    'set-cookie':
-      `${SESSION_COOKIE_NAME}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+    'set-cookie': `${SESSION_COOKIE_NAME}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
   })
 })
 
@@ -73,10 +73,8 @@ API.add('GET', '/callback', async (request, response) => {
 
     const userResult = await userResponse.json()
 
-    const { id, login } = userResult
-    await KV_USERS.put(id, JSON.stringify({ id, login }))
-
-    const sessionId = await createSession({ userId: id })
+    const { id: userId } = await createUser(userResult)
+    const sessionId = await createSession({ userId })
 
     response.send(302, null, {
       'set-cookie': `${SESSION_COOKIE_NAME}=${sessionId}`,
@@ -94,10 +92,7 @@ API.add('GET', '/', async (request, response) => {
 
   if (sessionId) {
     if (session) {
-      const user = await KV_USERS.get<{ login: string }>(session.userId, {
-        type: 'json',
-        cacheTtl: 3600,
-      })
+      const user = await getUser(session.userId)
 
       if (user) {
         return response.send(200, { hello: user.login })
@@ -108,6 +103,42 @@ API.add('GET', '/', async (request, response) => {
   }
 
   return response.send(200, { hello: 'world' })
+})
+
+API.add('PUT', '/:user/:namespace', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user, namespace } = request.params
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  const result = await addNamespace(sessionUser.id, namespace)
+
+  if (result) {
+    return response.send(201)
+  }
+
+  return response.send(400, { message: 'Invalid namespace' })
+})
+
+API.add('DELETE', '/:user/:namespace', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user, namespace } = request.params
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  const result = await removeNamespace(sessionUser.id, namespace)
+
+  if (result) {
+    return response.send(204)
+  }
+
+  return response.send(400, { message: 'Invalid namespace' })
 })
 
 listen(API.run)

@@ -12,7 +12,7 @@ interface SessionData {
 export const SESSION_COOKIE_NAME = 'oasis-session'
 
 export const createSession = async (data: SessionData): Promise<string> => {
-  const sessionId = await uuid()
+  const sessionId = uuid()
 
   await KV_SESSIONS.put(sessionId, JSON.stringify(data), {
     expirationTtl: 3600,
