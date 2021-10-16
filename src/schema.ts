@@ -1,6 +1,7 @@
 import { KV } from 'worktop/kv'
 import { User } from './user'
 import type { OpenAPI } from 'openapi-types'
+import { isValidSchema } from './validator'
 
 declare const KV_SCHEMAS: KV.Namespace
 
@@ -14,8 +15,12 @@ export const createSchema = async (
   user: User,
   namespaceId: string,
   schemaId: string,
-  schemaData: OpenAPI.Document,
+  schemaData: unknown,
 ): Promise<OpenAPI.Document> => {
+  if (!isValidSchema(schemaData)) {
+    throw new Error('Data is not a valid Swagger or OpenAPI schema')
+  }
+
   await KV_SCHEMAS.put(
     getSchemaKey(user.login, namespaceId, schemaId),
     JSON.stringify(schemaData),

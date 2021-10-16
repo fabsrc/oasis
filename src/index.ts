@@ -201,6 +201,7 @@ API.add('PUT', '/:user/:namespace/:schema', async (request, response) => {
 
     return response.send(201, newSchema)
   } catch (error) {
+    console.error((error as Error).message)
     return response.send(500, { message: (error as Error).message })
   }
 })
