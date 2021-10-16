@@ -1,27 +1,34 @@
 import { KV } from 'worktop/kv'
 import { User } from './user'
+import type { OpenAPI } from 'openapi-types'
 
 declare const KV_SCHEMAS: KV.Namespace
 
-// TODO: Use OAS types?
-type Schema = Record<string, unknown>
-
 const getSchemaKey = (
   userName: string,
-  namespaceId: string,
-  schemaId: string,
-) => `${userName}:${namespaceId}:${schemaId}`
+  namespaceId?: string,
+  schemaId?: string,
+) => [userName, namespaceId, schemaId].filter(Boolean).join(':')
 
 export const createSchema = async (
   user: User,
   namespaceId: string,
   schemaId: string,
-  schemaData: Schema,
-): Promise<Schema> => {
+  schemaData: OpenAPI.Document,
+): Promise<OpenAPI.Document> => {
   await KV_SCHEMAS.put(
     getSchemaKey(user.login, namespaceId, schemaId),
     JSON.stringify(schemaData),
-    { metadata: { owner: user.id } },
+    {
+      metadata: {
+        owner: user.id,
+        id: schemaId,
+        namespaceId: namespaceId,
+        name: schemaData.info.title,
+        version: schemaData.info.version,
+        storedAt: Date.now(),
+      },
+    },
   )
 
   return schemaData
@@ -31,13 +38,23 @@ export const getSchema = async (
   user: User,
   namespaceId: string,
   schemaId: string,
-): Promise<Schema | null> => {
-  const schema = await KV_SCHEMAS.get<Schema>(
+): Promise<OpenAPI.Document | null> => {
+  const schema = await KV_SCHEMAS.get<OpenAPI.Document>(
     getSchemaKey(user.login, namespaceId, schemaId),
     { type: 'json' },
   )
 
   return schema ?? null
+}
+
+export const getSchemaList = async (
+  user: User,
+  namespaceId?: string,
+): Promise<KV.KeyInfo[]> => {
+  const schemaList = await KV_SCHEMAS.list({
+    prefix: getSchemaKey(user.login, namespaceId) + ':',
+  })
+  return schemaList.keys
 }
 
 export const deleteSchema = async (

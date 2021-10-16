@@ -1,7 +1,6 @@
-import { Router, listen } from 'worktop'
+import { Router } from 'worktop'
 import { stringify as yamlStringify } from 'yaml'
-import type { KV } from 'worktop/kv'
-import { createSchema, deleteSchema, getSchema } from './schema'
+import { createSchema, deleteSchema, getSchema, getSchemaList } from './schema'
 import {
   createSession,
   deleteSession,
@@ -15,10 +14,10 @@ import {
   getUser,
   removeNamespace,
 } from './user'
+import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
 
 declare const GITHUB_CLIENT_ID: string
 declare const GITHUB_CLIENT_SECRET: string
-declare const KV_USERS: KV.Namespace
 
 const API = new Router()
 
@@ -95,7 +94,7 @@ API.add('GET', '/callback', async (request, response) => {
   }
 })
 
-API.add('GET', '/', async (request, response) => {
+API.add('GET', '/session', async (request, response) => {
   const [sessionId, session] = await getSession(request)
 
   if (sessionId) {
@@ -103,7 +102,7 @@ API.add('GET', '/', async (request, response) => {
       const user = await getUser(session.userId)
 
       if (user) {
-        return response.send(200, { hello: user.login })
+        return response.send(200, { login: user.login })
       }
     } else {
       return response.send(302, null, { location: '/login' })
@@ -111,6 +110,28 @@ API.add('GET', '/', async (request, response) => {
   }
 
   return response.send(200, { hello: 'world' })
+})
+
+API.add('GET', '/:user', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user } = request.params
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  const list = await getSchemaList(sessionUser)
+
+  return response.send(200, {
+    schemas: list.map((l) => ({
+      id: l.metadata?.id,
+      namespaceId: l.metadata?.namespaceId,
+      name: l.metadata?.name,
+      version: l.metadata?.version,
+      path: l.name.replaceAll(':', '/'),
+    })),
+  })
 })
 
 API.add('PUT', '/:user/:namespace', async (request, response) => {
@@ -260,4 +281,14 @@ API.add('DELETE', '/:user/:namespace/:schema', async (request, response) => {
   return response.send(400, { message: 'Invalid schema' })
 })
 
-listen(API.run)
+const serverResponse = async (event: FetchEvent) => {
+  const url = new URL(event.request.url)
+  if (url.pathname === '/') {
+    return await getAssetFromKV(event)
+  }
+  return API.run(event)
+}
+
+addEventListener('fetch', (event) => {
+  event.respondWith(serverResponse(event))
+})
