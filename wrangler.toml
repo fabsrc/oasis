@@ -6,8 +6,14 @@ route = ""
 workers_dev = true
 compatibility_date = "2021-10-08"
 
+kv_namespaces = [ 
+    { binding = "KV_USERS", id = "4ab7d3d834c84e55ad3c7f56d1a3888a", preview_id = "4ab7d3d834c84e55ad3c7f56d1a3888a" },
+    { binding = "KV_SESSIONS", id = "18c69cc125c64626a0602da2a711ca36", preview_id = "18c69cc125c64626a0602da2a711ca36" },
+    { binding = "KV_SCHEMAS", id = "5c95d17eea3345da8438497a83ee353e", preview_id = "5c95d17eea3345da8438497a83ee353e" }
+]
+
 [build]
-command = "npm install && npm run build"
+command = "webpack"
 [build.upload]
 format = "service-worker"
 
