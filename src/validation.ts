@@ -25,3 +25,13 @@ export const isValidSchema = (
   }
   return false
 }
+
+export const isValidGithubUsername = (username: string): boolean => {
+  const re = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/iu
+  return re.test(username)
+}
+
+export const isValidNamespace = (namespace: string): boolean => {
+  const re = /^[\w-]{3,30}$/iu
+  return re.test(namespace)
+}

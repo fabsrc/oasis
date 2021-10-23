@@ -1,7 +1,7 @@
 import { KV } from 'worktop/kv'
 import { User } from './user'
 import type { OpenAPI } from 'openapi-types'
-import { isValidSchema } from './validator'
+import { isValidSchema } from './validation'
 
 declare const KV_SCHEMAS: KV.Namespace
 

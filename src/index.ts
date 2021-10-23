@@ -15,6 +15,7 @@ import {
   removeNamespace,
 } from './user'
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
+import { isValidGithubUsername, isValidNamespace } from './validation'
 
 declare const GITHUB_CLIENT_ID: string
 declare const GITHUB_CLIENT_SECRET: string
@@ -109,7 +110,7 @@ API.add('GET', '/session', async (request, response) => {
     }
   }
 
-  return response.send(200, { hello: 'world' })
+  return response.send(401)
 })
 
 API.add('GET', '/:user', async (request, response) => {
@@ -119,6 +120,10 @@ API.add('GET', '/:user', async (request, response) => {
 
   if (!sessionUser || sessionUser.login !== user) {
     return response.send(400, { message: 'Invalid request' })
+  }
+
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
   }
 
   const list = await getSchemaList(sessionUser)
@@ -143,6 +148,14 @@ API.add('PUT', '/:user/:namespace', async (request, response) => {
     return response.send(400, { message: 'Invalid request' })
   }
 
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
+  }
+
+  if (!isValidNamespace(namespace)) {
+    return response.send(400, { message: 'Invalid namespace' })
+  }
+
   const result = await addNamespace(sessionUser.id, namespace)
 
   if (result) {
@@ -161,6 +174,14 @@ API.add('DELETE', '/:user/:namespace', async (request, response) => {
     return response.send(400, { message: 'Invalid request' })
   }
 
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
+  }
+
+  if (!isValidNamespace(namespace)) {
+    return response.send(400, { message: 'Invalid namespace' })
+  }
+
   const result = await removeNamespace(sessionUser.id, namespace)
 
   if (result) {
@@ -177,6 +198,14 @@ API.add('PUT', '/:user/:namespace/:schema', async (request, response) => {
 
   if (!sessionUser || sessionUser.login !== user) {
     return response.send(400, { message: 'Invalid request' })
+  }
+
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
+  }
+
+  if (!isValidNamespace(namespace)) {
+    return response.send(400, { message: 'Invalid namespace' })
   }
 
   const userNamespace = await getNamespace(sessionUser.id, namespace)
@@ -215,6 +244,14 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
 
   if (!sessionUser || sessionUser.login !== user) {
     return response.send(400, { message: 'Invalid request' })
+  }
+
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
+  }
+
+  if (!isValidNamespace(namespace)) {
+    return response.send(400, { message: 'Invalid namespace' })
   }
 
   const schemaData = await getSchema(sessionUser, namespace, schemaId)
@@ -271,6 +308,14 @@ API.add('DELETE', '/:user/:namespace/:schema', async (request, response) => {
 
   if (!sessionUser || sessionUser.login !== user) {
     return response.send(400, { message: 'Invalid request' })
+  }
+
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
+  }
+
+  if (!isValidNamespace(namespace)) {
+    return response.send(400, { message: 'Invalid namespace' })
   }
 
   const result = await deleteSchema(sessionUser, namespace, schema)
