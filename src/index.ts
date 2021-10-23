@@ -136,6 +136,10 @@ API.add('GET', '/:user', async (request, response) => {
       version: l.metadata?.version,
       path: l.name.replaceAll(':', '/'),
     })),
+    namespaces: sessionUser.namespaces?.map((ns) => ({
+      id: ns.id,
+      name: ns.name,
+    })),
   })
 })
 
@@ -143,6 +147,7 @@ API.add('PUT', '/:user/:namespace', async (request, response) => {
   const [, session] = await getSession(request)
   const sessionUser = await getUser(session?.userId)
   const { user, namespace } = request.params
+  const body = await request.body<{ name: string }>()
 
   if (!sessionUser || sessionUser.login !== user) {
     return response.send(400, { message: 'Invalid request' })
@@ -156,7 +161,7 @@ API.add('PUT', '/:user/:namespace', async (request, response) => {
     return response.send(400, { message: 'Invalid namespace' })
   }
 
-  const result = await addNamespace(sessionUser.id, namespace)
+  const result = await addNamespace(sessionUser.id, namespace, body?.name)
 
   if (result) {
     return response.send(201)

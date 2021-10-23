@@ -12,109 +12,248 @@
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝</text></svg>">
 </head>
 
-<body x-data="{
-  session: {},
-  init() {
-    return fetch('/session')
-      .then(response => response.json())
-      .then(data => this.session = data)
-  }
-  }">
-  <section class="py-1 bg-blueGray-50">
-    <div class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-24">
-      <div class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded ">
+<body>
+
+  <header class="py-8 mt-10 text-center select-none">
+    <div class="text-4xl mb-2">
+      🏝
+    </div>
+    <div class="text-base text-gray-600 font-semibold">
+      <span style="letter-spacing: 1em; margin-right: -1em;">OASIS</span>
+    </div>
+    <div class="uppercase tracking-widest text-xs text-gray-300">
+      OpenAPI Schema Introspection
+    </div>
+  </header>
+
+
+  <main class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-20" x-data="{
+      session: null,
+      init() {
+        return fetch('/session')
+          .then(response => response.json())
+          .then(data => this.session = data ?? null )
+      }
+      }">
+    <template x-if="session">
+      <div class="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded ">
         <div class="rounded-t mb-0 px-4 py-3 border-0">
-          <div class="flex flex-wrap items-center">
-            <div class="relative w-full px-4 max-w-full flex-grow flex-1">
-              <h3 class="font-semibold text-base text-blueGray-700">Schemas</h3>
+          <div class="flex flex-wrap items-center space-between">
+            <div class="w-full px-4 max-w-full flex-grow flex-1">
+              <h3 class="font-semibold text-base text-gray-600">Schemas</h3>
+            </div>
+
+            <div x-data="{ 'showModal': false }" @keydown.escape="showModal = false" x-cloak>
+              <button
+                class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                @click="showModal = true">
+                Add Namespace
+              </button>
+
+              <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="showModal"
+                :class="{ 'absolute inset-0 z-10 flex items-center justify-center': showModal }">
+                <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
+                  x-show="showModal" @click.away="showModal = false">
+
+                  <div class="flex justify-between items-center pb-3">
+                    <p class="uppercase font-sembold text-gray-600 font-semibold">Add Namespace</p>
+                    <div class="cursor-pointer z-50" @click="showModal = false">
+                      <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                        viewBox="0 0 18 18">
+                        <path
+                          d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                        </path>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <form x-data="namespaceForm()" @submit.prevent="submitData">
+                    <div>
+                      <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
+                        ID
+                      </label>
+                      <input
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none focus:shadow-outline"
+                        x-model="formData.id" id="id" type="text" placeholder="ID">
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                        Name
+                      </label>
+                      <input
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                        x-model="formData.name" id="name" type="text" placeholder="Name">
+                    </div>
+
+
+                    <div class="flex justify-end pt-2">
+                      <button
+                        class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                        type="submit"
+                        @click="showModal = false">Submit</button>
+                      <button
+                        class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                        @click="showModal = false">Close</button>
+                    </div>
+                  </form>
+
+
+                </div>
+                <!--/Dialog -->
+              </div><!-- /Overlay -->
             </div>
           </div>
         </div>
 
-        <span class="block w-full overflow-x-auto" x-effect="init()" x-data="{
+        <div x-effect="init()" x-data="{
           schemas: [],
+          namespaces: [],
           init() {
-            if (session.login) {
+            if (session) {
               return fetch('/' + session.login)
                 .then(response => response.json())
-                .then(data => this.schemas = data.schemas)
+                .then(data => {
+                  this.schemas = data.schemas
+                  this.namespaces = data.namespaces
+                })
             }
           },
           remove(id) {
             this.schemas = this.schemas.filter(s => s.id !== id)
           }
           }">
-          <table class="items-center bg-transparent w-full border-collapse ">
-            <thead>
-              <tr>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                  ID
-                </th>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                  Name
-                </th>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                  Version
-                </th>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                </th>
-              </tr>
-            </thead>
+          <div>
+            <template x-for="namespace in namespaces" :key="namespace.id">
+              <div class="w-full px-4 max-w-full flex-grow flex-1">
+                <h4 class="font-semibold text-xs text-gray-600" x-text="namespace.name">
+              </div>
+            </template>
+          </div>
 
-            <tbody>
-              <template x-for="schema in schemas" :key="schema.path">
+          <div class="block w-full overflow-x-auto">
+            <table class="items-center bg-transparent w-full border-collapse ">
+              <thead>
                 <tr>
                   <th
-                    class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                    <span x-text="schema.namespaceId"></span>
-                    /
-                    <a x-bind:href="schema.path" target="_blank" x-text="schema.id" class="cursor-pointer"></a>
+                    class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                    ID
                   </th>
                   <th
-                    class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                    <span x-text="schema.name"></span>
+                    class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                    Name
                   </th>
-
                   <th
-                    class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                    <span x-text="schema.version"></span>
+                    class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                    Version
                   </th>
-                  <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                    <div class="flex justify-end space-x-4">
-                      <a x-bind:href="schema.path + '.html'" target="_blank"
-                        class="text-gray-600 hover:opacity-50 cursor-pointer">SwaggerUI</a>
-                      <a x-bind:href="schema.path + '.json'" target="_blank"
-                        class="text-gray-600 hover:opacity-50 cursor-pointer">JSON</a>
-                      <a x-bind:href="schema.path + '.yaml'" target="_blank"
-                        class="text-gray-600 hover:opacity-50 cursor-pointer">YAML</a>
-                      <a class="text-red-600 hover:opacity-50 cursor-pointer"
-                        @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {remove(schema.id)})">Delete</a>
-                    </div>
-                  </td>
+                  <th
+                    class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
+                  </th>
                 </tr>
-              </template>
-            </tbody>
+              </thead>
 
-          </table>
-      </div>
-    </div>
-    </div>
-    <footer class="relative pt-8 pb-6 mt-16">
-      <div class="container mx-auto px-4">
-        <div class="flex flex-wrap items-center md:justify-between justify-center">
-          <div class="w-full md:w-6/12 px-4 mx-auto text-center">
-            <div class="text-sm text-blueGray-500 font-semibold py-1">
-              🏝
-            </div>
+              <tbody>
+                <template x-for="schema in schemas" :key="schema.path">
+                  <tr>
+                    <th
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+                      <span x-text="schema.namespaceId"></span>
+                      /
+                      <a x-bind:href="schema.path" target="_blank" x-text="schema.id" class="cursor-pointer"></a>
+                    </th>
+                    <th
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+                      <span x-text="schema.name"></span>
+                    </th>
+
+                    <th
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
+                      <span x-text="schema.version"></span>
+                    </th>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                      <div class="flex justify-end space-x-4">
+                        <a x-bind:href="schema.path + '.html'" target="_blank"
+                          class="text-gray-600 hover:opacity-50 cursor-pointer">SwaggerUI</a>
+                        <a x-bind:href="schema.path + '.json'" target="_blank"
+                          class="text-gray-600 hover:opacity-50 cursor-pointer">JSON</a>
+                        <a x-bind:href="schema.path + '.yaml'" target="_blank"
+                          class="text-gray-600 hover:opacity-50 cursor-pointer">YAML</a>
+                        <a class="text-red-600 hover:opacity-50 cursor-pointer"
+                          @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {remove(schema.id)})">Delete</a>
+                      </div>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+
+            </table>
           </div>
         </div>
       </div>
-    </footer>
-  </section>
+    </template>
+
+    <template x-if="!session">
+      <div class="text-center">
+        <div class="text-gray-600">Sign in with GitHub to create, view, update and delete OpenAPI schemas.</div>
+        <div class="mt-8">
+          <a href="/login"
+            class="inline-block bg-white hover:bg-gray-100 text-gray-600 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+            <div class="float-left py-1 pr-3"><img src="https://unpkg.com/simple-icons@v5/icons/github.svg" class=""
+                width="16" height="16"></div>
+            <span>Sign In With GitHub</span>
+          </a>
+        </div>
+      </div>
+    </template>
+
+  </main>
+
+  <footer class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
+    2021
+  </footer>
+
+  <script>
+    function namespaceForm() {
+      return {
+        formData: {
+          id: '',
+          name: null,
+        },
+        message: '',
+
+        submitData() {
+          this.message = ''
+
+          if (!this.formData.id) {
+            return
+          }
+
+          fetch(`/${Alpine.store('session').login}/${this.formData.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(this.formData)
+          })
+            .catch(() => {
+              // this.message = 'Ooops! Something went wrong!'
+            })
+        }
+      }
+    }
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.store('session', {
+        login: null,
+
+        init() {
+          return fetch('/session')
+            .then(response => response.json())
+            .then(data => this.login = data.login ?? null)
+        }
+      })
+    })
+
+  </script>
+
 </body>
 
 </html>

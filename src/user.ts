@@ -5,25 +5,28 @@ declare const KV_USERS: KV.Namespace
 interface GitHubUser {
   id: string
   login: string
+  avatar_url: string
 }
 
 export interface User {
   id: string
   login: string
+  avatarUrl: string
   namespaces?: Namespace[]
 }
 
 interface Namespace {
   id: string
+  name: string
 }
 
 export const createUser = async (gitHubUser: GitHubUser): Promise<User> => {
-  const { id, login } = gitHubUser
+  const { id, login, avatar_url } = gitHubUser
   const existingUser = await getUser(id)
 
   if (!existingUser) {
-    await KV_USERS.put(id, JSON.stringify({ id, login }))
-    return { id, login }
+    await KV_USERS.put(id, JSON.stringify({ id, login, avatarUrl: avatar_url }))
+    return { id, login, avatarUrl: avatar_url }
   }
 
   return existingUser
@@ -43,22 +46,20 @@ export const getUser = async (userId?: string): Promise<User | null> => {
 
 export const addNamespace = async (
   userId: string,
-  namespaceId: string,
+  id: string,
+  name?: string,
 ): Promise<Namespace | null> => {
   const user = await getUser(userId)
 
   if (user) {
-    const namespace = { id: namespaceId }
+    const namespace = { id, name: name ?? id }
 
-    if (
-      !user.namespaces ||
-      user.namespaces.length === 0 ||
-      user.namespaces?.some((ns) => ns.id !== namespace.id)
-    ) {
-      user.namespaces = [...(user?.namespaces ?? []), namespace]
-      await KV_USERS.put(userId, JSON.stringify(user))
-      return namespace
-    }
+    user.namespaces = [
+      ...(user.namespaces?.filter((ns) => ns.id !== id) ?? []),
+      namespace,
+    ]
+    await KV_USERS.put(userId, JSON.stringify(user))
+    return namespace
   }
 
   return null
