@@ -1,4 +1,5 @@
 import { KV } from 'worktop/kv'
+import { deleteSchemaRaw, getSchemaList } from './schema'
 
 declare const KV_USERS: KV.Namespace
 
@@ -87,6 +88,8 @@ export const removeNamespace = async (
     user?.namespaces?.some((ns) => ns.id === namespaceId) ?? false
 
   if (user && user.namespaces && hasNamespace) {
+    const schemas = await getSchemaList(user, namespaceId)
+    await Promise.all(schemas.map((s) => deleteSchemaRaw(s.name)))
     user.namespaces = user.namespaces.filter((ns) => ns.id !== namespaceId)
     await KV_USERS.put(userId, JSON.stringify(user))
     return true

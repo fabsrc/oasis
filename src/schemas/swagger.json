@@ -1,13 +1,13 @@
 {
   "title": "A JSON Schema for Swagger 2.0 API.",
-  "id": "http://swagger.io/v2/schema.json##",
+  "id": "http://swagger.io/v2/schema.json#",
   "$schema": "http://json-schema.org/draft-04/schema",
   "type": "object",
   "required": ["swagger", "info", "paths"],
   "additionalProperties": false,
   "patternProperties": {
     "^x-": {
-      "$ref": "#/definitions/vendorExtension"
+      "$ref": "##/definitions/vendorExtension"
     }
   },
   "properties": {
@@ -17,7 +17,7 @@
       "description": "The Swagger version of this document."
     },
     "info": {
-      "$ref": "#/definitions/info"
+      "$ref": "##/definitions/info"
     },
     "host": {
       "type": "string",
@@ -30,13 +30,13 @@
       "description": "The base path to the API. Example: '/api'."
     },
     "schemes": {
-      "$ref": "#/definitions/schemesList"
+      "$ref": "##/definitions/schemesList"
     },
     "consumes": {
       "description": "A list of MIME types accepted by the API.",
       "allOf": [
         {
-          "$ref": "#/definitions/mediaTypeList"
+          "$ref": "##/definitions/mediaTypeList"
         }
       ]
     },
@@ -44,37 +44,37 @@
       "description": "A list of MIME types the API can produce.",
       "allOf": [
         {
-          "$ref": "#/definitions/mediaTypeList"
+          "$ref": "##/definitions/mediaTypeList"
         }
       ]
     },
     "paths": {
-      "$ref": "#/definitions/paths"
+      "$ref": "##/definitions/paths"
     },
     "definitions": {
-      "$ref": "#/definitions/definitions"
+      "$ref": "##/definitions/definitions"
     },
     "parameters": {
-      "$ref": "#/definitions/parameterDefinitions"
+      "$ref": "##/definitions/parameterDefinitions"
     },
     "responses": {
-      "$ref": "#/definitions/responseDefinitions"
+      "$ref": "##/definitions/responseDefinitions"
     },
     "security": {
-      "$ref": "#/definitions/security"
+      "$ref": "##/definitions/security"
     },
     "securityDefinitions": {
-      "$ref": "#/definitions/securityDefinitions"
+      "$ref": "##/definitions/securityDefinitions"
     },
     "tags": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/tag"
+        "$ref": "##/definitions/tag"
       },
       "uniqueItems": true
     },
     "externalDocs": {
-      "$ref": "#/definitions/externalDocs"
+      "$ref": "##/definitions/externalDocs"
     }
   },
   "definitions": {
@@ -85,7 +85,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -106,10 +106,10 @@
           "description": "The terms of service for the API."
         },
         "contact": {
-          "$ref": "#/definitions/contact"
+          "$ref": "##/definitions/contact"
         },
         "license": {
-          "$ref": "#/definitions/license"
+          "$ref": "##/definitions/license"
         }
       }
     },
@@ -135,7 +135,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -156,7 +156,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -165,10 +165,10 @@
       "description": "Relative paths to the individual endpoints. They must be relative to the 'basePath'.",
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         },
         "^/": {
-          "$ref": "#/definitions/pathItem"
+          "$ref": "##/definitions/pathItem"
         }
       },
       "additionalProperties": false
@@ -176,21 +176,21 @@
     "definitions": {
       "type": "object",
       "additionalProperties": {
-        "$ref": "#/definitions/schema"
+        "$ref": "##/definitions/schema"
       },
       "description": "One or more JSON objects describing the schemas being consumed and produced by the API."
     },
     "parameterDefinitions": {
       "type": "object",
       "additionalProperties": {
-        "$ref": "#/definitions/parameter"
+        "$ref": "##/definitions/parameter"
       },
       "description": "One or more JSON representations for parameters"
     },
     "responseDefinitions": {
       "type": "object",
       "additionalProperties": {
-        "$ref": "#/definitions/response"
+        "$ref": "##/definitions/response"
       },
       "description": "One or more JSON representations for responses"
     },
@@ -210,7 +210,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -228,7 +228,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -248,7 +248,7 @@
           "description": "A longer description of the operation, GitHub Flavored Markdown is allowed."
         },
         "externalDocs": {
-          "$ref": "#/definitions/externalDocs"
+          "$ref": "##/definitions/externalDocs"
         },
         "operationId": {
           "type": "string",
@@ -258,7 +258,7 @@
           "description": "A list of MIME types the API can produce.",
           "allOf": [
             {
-              "$ref": "#/definitions/mediaTypeList"
+              "$ref": "##/definitions/mediaTypeList"
             }
           ]
         },
@@ -266,25 +266,25 @@
           "description": "A list of MIME types the API can consume.",
           "allOf": [
             {
-              "$ref": "#/definitions/mediaTypeList"
+              "$ref": "##/definitions/mediaTypeList"
             }
           ]
         },
         "parameters": {
-          "$ref": "#/definitions/parametersList"
+          "$ref": "##/definitions/parametersList"
         },
         "responses": {
-          "$ref": "#/definitions/responses"
+          "$ref": "##/definitions/responses"
         },
         "schemes": {
-          "$ref": "#/definitions/schemesList"
+          "$ref": "##/definitions/schemesList"
         },
         "deprecated": {
           "type": "boolean",
           "default": false
         },
         "security": {
-          "$ref": "#/definitions/security"
+          "$ref": "##/definitions/security"
         }
       }
     },
@@ -293,7 +293,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -301,28 +301,28 @@
           "type": "string"
         },
         "get": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "put": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "post": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "delete": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "options": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "head": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "patch": {
-          "$ref": "#/definitions/operation"
+          "$ref": "##/definitions/operation"
         },
         "parameters": {
-          "$ref": "#/definitions/parametersList"
+          "$ref": "##/definitions/parametersList"
         }
       }
     },
@@ -333,10 +333,10 @@
       "additionalProperties": false,
       "patternProperties": {
         "^([0-9]{3})$|^(default)$": {
-          "$ref": "#/definitions/responseValue"
+          "$ref": "##/definitions/responseValue"
         },
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "not": {
@@ -344,7 +344,7 @@
         "additionalProperties": false,
         "patternProperties": {
           "^x-": {
-            "$ref": "#/definitions/vendorExtension"
+            "$ref": "##/definitions/vendorExtension"
           }
         }
       }
@@ -352,10 +352,10 @@
     "responseValue": {
       "oneOf": [
         {
-          "$ref": "#/definitions/response"
+          "$ref": "##/definitions/response"
         },
         {
-          "$ref": "#/definitions/jsonReference"
+          "$ref": "##/definitions/jsonReference"
         }
       ]
     },
@@ -369,31 +369,31 @@
         "schema": {
           "oneOf": [
             {
-              "$ref": "#/definitions/schema"
+              "$ref": "##/definitions/schema"
             },
             {
-              "$ref": "#/definitions/fileSchema"
+              "$ref": "##/definitions/fileSchema"
             }
           ]
         },
         "headers": {
-          "$ref": "#/definitions/headers"
+          "$ref": "##/definitions/headers"
         },
         "examples": {
-          "$ref": "#/definitions/examples"
+          "$ref": "##/definitions/examples"
         }
       },
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
     "headers": {
       "type": "object",
       "additionalProperties": {
-        "$ref": "#/definitions/header"
+        "$ref": "##/definitions/header"
       }
     },
     "header": {
@@ -409,49 +409,49 @@
           "type": "string"
         },
         "items": {
-          "$ref": "#/definitions/primitivesItems"
+          "$ref": "##/definitions/primitivesItems"
         },
         "collectionFormat": {
-          "$ref": "#/definitions/collectionFormat"
+          "$ref": "##/definitions/collectionFormat"
         },
         "default": {
-          "$ref": "#/definitions/default"
+          "$ref": "##/definitions/default"
         },
         "maximum": {
-          "$ref": "#/definitions/maximum"
+          "$ref": "##/definitions/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "#/definitions/exclusiveMaximum"
+          "$ref": "##/definitions/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "#/definitions/minimum"
+          "$ref": "##/definitions/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "#/definitions/exclusiveMinimum"
+          "$ref": "##/definitions/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "#/definitions/maxLength"
+          "$ref": "##/definitions/maxLength"
         },
         "minLength": {
-          "$ref": "#/definitions/minLength"
+          "$ref": "##/definitions/minLength"
         },
         "pattern": {
-          "$ref": "#/definitions/pattern"
+          "$ref": "##/definitions/pattern"
         },
         "maxItems": {
-          "$ref": "#/definitions/maxItems"
+          "$ref": "##/definitions/maxItems"
         },
         "minItems": {
-          "$ref": "#/definitions/minItems"
+          "$ref": "##/definitions/minItems"
         },
         "uniqueItems": {
-          "$ref": "#/definitions/uniqueItems"
+          "$ref": "##/definitions/uniqueItems"
         },
         "enum": {
-          "$ref": "#/definitions/enum"
+          "$ref": "##/definitions/enum"
         },
         "multipleOf": {
-          "$ref": "#/definitions/multipleOf"
+          "$ref": "##/definitions/multipleOf"
         },
         "description": {
           "type": "string"
@@ -459,7 +459,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -473,7 +473,7 @@
       "required": ["name", "in", "schema"],
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -496,7 +496,7 @@
           "default": false
         },
         "schema": {
-          "$ref": "#/definitions/schema"
+          "$ref": "##/definitions/schema"
         }
       },
       "additionalProperties": false
@@ -505,7 +505,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -535,49 +535,49 @@
           "type": "string"
         },
         "items": {
-          "$ref": "#/definitions/primitivesItems"
+          "$ref": "##/definitions/primitivesItems"
         },
         "collectionFormat": {
-          "$ref": "#/definitions/collectionFormat"
+          "$ref": "##/definitions/collectionFormat"
         },
         "default": {
-          "$ref": "#/definitions/default"
+          "$ref": "##/definitions/default"
         },
         "maximum": {
-          "$ref": "#/definitions/maximum"
+          "$ref": "##/definitions/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "#/definitions/exclusiveMaximum"
+          "$ref": "##/definitions/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "#/definitions/minimum"
+          "$ref": "##/definitions/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "#/definitions/exclusiveMinimum"
+          "$ref": "##/definitions/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "#/definitions/maxLength"
+          "$ref": "##/definitions/maxLength"
         },
         "minLength": {
-          "$ref": "#/definitions/minLength"
+          "$ref": "##/definitions/minLength"
         },
         "pattern": {
-          "$ref": "#/definitions/pattern"
+          "$ref": "##/definitions/pattern"
         },
         "maxItems": {
-          "$ref": "#/definitions/maxItems"
+          "$ref": "##/definitions/maxItems"
         },
         "minItems": {
-          "$ref": "#/definitions/minItems"
+          "$ref": "##/definitions/minItems"
         },
         "uniqueItems": {
-          "$ref": "#/definitions/uniqueItems"
+          "$ref": "##/definitions/uniqueItems"
         },
         "enum": {
-          "$ref": "#/definitions/enum"
+          "$ref": "##/definitions/enum"
         },
         "multipleOf": {
-          "$ref": "#/definitions/multipleOf"
+          "$ref": "##/definitions/multipleOf"
         }
       }
     },
@@ -585,7 +585,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -620,49 +620,49 @@
           "type": "string"
         },
         "items": {
-          "$ref": "#/definitions/primitivesItems"
+          "$ref": "##/definitions/primitivesItems"
         },
         "collectionFormat": {
-          "$ref": "#/definitions/collectionFormatWithMulti"
+          "$ref": "##/definitions/collectionFormatWithMulti"
         },
         "default": {
-          "$ref": "#/definitions/default"
+          "$ref": "##/definitions/default"
         },
         "maximum": {
-          "$ref": "#/definitions/maximum"
+          "$ref": "##/definitions/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "#/definitions/exclusiveMaximum"
+          "$ref": "##/definitions/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "#/definitions/minimum"
+          "$ref": "##/definitions/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "#/definitions/exclusiveMinimum"
+          "$ref": "##/definitions/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "#/definitions/maxLength"
+          "$ref": "##/definitions/maxLength"
         },
         "minLength": {
-          "$ref": "#/definitions/minLength"
+          "$ref": "##/definitions/minLength"
         },
         "pattern": {
-          "$ref": "#/definitions/pattern"
+          "$ref": "##/definitions/pattern"
         },
         "maxItems": {
-          "$ref": "#/definitions/maxItems"
+          "$ref": "##/definitions/maxItems"
         },
         "minItems": {
-          "$ref": "#/definitions/minItems"
+          "$ref": "##/definitions/minItems"
         },
         "uniqueItems": {
-          "$ref": "#/definitions/uniqueItems"
+          "$ref": "##/definitions/uniqueItems"
         },
         "enum": {
-          "$ref": "#/definitions/enum"
+          "$ref": "##/definitions/enum"
         },
         "multipleOf": {
-          "$ref": "#/definitions/multipleOf"
+          "$ref": "##/definitions/multipleOf"
         }
       }
     },
@@ -670,7 +670,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -705,49 +705,49 @@
           "type": "string"
         },
         "items": {
-          "$ref": "#/definitions/primitivesItems"
+          "$ref": "##/definitions/primitivesItems"
         },
         "collectionFormat": {
-          "$ref": "#/definitions/collectionFormatWithMulti"
+          "$ref": "##/definitions/collectionFormatWithMulti"
         },
         "default": {
-          "$ref": "#/definitions/default"
+          "$ref": "##/definitions/default"
         },
         "maximum": {
-          "$ref": "#/definitions/maximum"
+          "$ref": "##/definitions/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "#/definitions/exclusiveMaximum"
+          "$ref": "##/definitions/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "#/definitions/minimum"
+          "$ref": "##/definitions/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "#/definitions/exclusiveMinimum"
+          "$ref": "##/definitions/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "#/definitions/maxLength"
+          "$ref": "##/definitions/maxLength"
         },
         "minLength": {
-          "$ref": "#/definitions/minLength"
+          "$ref": "##/definitions/minLength"
         },
         "pattern": {
-          "$ref": "#/definitions/pattern"
+          "$ref": "##/definitions/pattern"
         },
         "maxItems": {
-          "$ref": "#/definitions/maxItems"
+          "$ref": "##/definitions/maxItems"
         },
         "minItems": {
-          "$ref": "#/definitions/minItems"
+          "$ref": "##/definitions/minItems"
         },
         "uniqueItems": {
-          "$ref": "#/definitions/uniqueItems"
+          "$ref": "##/definitions/uniqueItems"
         },
         "enum": {
-          "$ref": "#/definitions/enum"
+          "$ref": "##/definitions/enum"
         },
         "multipleOf": {
-          "$ref": "#/definitions/multipleOf"
+          "$ref": "##/definitions/multipleOf"
         }
       }
     },
@@ -755,7 +755,7 @@
       "additionalProperties": false,
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "required": ["required"],
@@ -786,49 +786,49 @@
           "type": "string"
         },
         "items": {
-          "$ref": "#/definitions/primitivesItems"
+          "$ref": "##/definitions/primitivesItems"
         },
         "collectionFormat": {
-          "$ref": "#/definitions/collectionFormat"
+          "$ref": "##/definitions/collectionFormat"
         },
         "default": {
-          "$ref": "#/definitions/default"
+          "$ref": "##/definitions/default"
         },
         "maximum": {
-          "$ref": "#/definitions/maximum"
+          "$ref": "##/definitions/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "#/definitions/exclusiveMaximum"
+          "$ref": "##/definitions/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "#/definitions/minimum"
+          "$ref": "##/definitions/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "#/definitions/exclusiveMinimum"
+          "$ref": "##/definitions/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "#/definitions/maxLength"
+          "$ref": "##/definitions/maxLength"
         },
         "minLength": {
-          "$ref": "#/definitions/minLength"
+          "$ref": "##/definitions/minLength"
         },
         "pattern": {
-          "$ref": "#/definitions/pattern"
+          "$ref": "##/definitions/pattern"
         },
         "maxItems": {
-          "$ref": "#/definitions/maxItems"
+          "$ref": "##/definitions/maxItems"
         },
         "minItems": {
-          "$ref": "#/definitions/minItems"
+          "$ref": "##/definitions/minItems"
         },
         "uniqueItems": {
-          "$ref": "#/definitions/uniqueItems"
+          "$ref": "##/definitions/uniqueItems"
         },
         "enum": {
-          "$ref": "#/definitions/enum"
+          "$ref": "##/definitions/enum"
         },
         "multipleOf": {
-          "$ref": "#/definitions/multipleOf"
+          "$ref": "##/definitions/multipleOf"
         }
       }
     },
@@ -837,26 +837,26 @@
       "required": ["name", "in", "type"],
       "oneOf": [
         {
-          "$ref": "#/definitions/headerParameterSubSchema"
+          "$ref": "##/definitions/headerParameterSubSchema"
         },
         {
-          "$ref": "#/definitions/formDataParameterSubSchema"
+          "$ref": "##/definitions/formDataParameterSubSchema"
         },
         {
-          "$ref": "#/definitions/queryParameterSubSchema"
+          "$ref": "##/definitions/queryParameterSubSchema"
         },
         {
-          "$ref": "#/definitions/pathParameterSubSchema"
+          "$ref": "##/definitions/pathParameterSubSchema"
         }
       ]
     },
     "parameter": {
       "oneOf": [
         {
-          "$ref": "#/definitions/bodyParameter"
+          "$ref": "##/definitions/bodyParameter"
         },
         {
-          "$ref": "#/definitions/nonBodyParameter"
+          "$ref": "##/definitions/nonBodyParameter"
         }
       ]
     },
@@ -865,7 +865,7 @@
       "description": "A deterministic version of a JSON Schema object.",
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "properties": {
@@ -876,63 +876,63 @@
           "type": "string"
         },
         "title": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/title"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/title"
         },
         "description": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/description"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/description"
         },
         "default": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/default"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/default"
         },
         "multipleOf": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/multipleOf"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/multipleOf"
         },
         "maximum": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/maximum"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMaximum"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/minimum"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMinimum"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveInteger"
         },
         "minLength": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveIntegerDefault0"
         },
         "pattern": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/pattern"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/pattern"
         },
         "maxItems": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveInteger"
         },
         "minItems": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveIntegerDefault0"
         },
         "uniqueItems": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/uniqueItems"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/uniqueItems"
         },
         "maxProperties": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveInteger"
         },
         "minProperties": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveIntegerDefault0"
         },
         "required": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/stringArray"
         },
         "enum": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/enum"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/enum"
         },
         "additionalProperties": {
           "anyOf": [
             {
-              "$ref": "#/definitions/schema"
+              "$ref": "##/definitions/schema"
             },
             {
               "type": "boolean"
@@ -941,18 +941,18 @@
           "default": {}
         },
         "type": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/type"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/type"
         },
         "items": {
           "anyOf": [
             {
-              "$ref": "#/definitions/schema"
+              "$ref": "##/definitions/schema"
             },
             {
               "type": "array",
               "minItems": 1,
               "items": {
-                "$ref": "#/definitions/schema"
+                "$ref": "##/definitions/schema"
               }
             }
           ],
@@ -962,13 +962,13 @@
           "type": "array",
           "minItems": 1,
           "items": {
-            "$ref": "#/definitions/schema"
+            "$ref": "##/definitions/schema"
           }
         },
         "properties": {
           "type": "object",
           "additionalProperties": {
-            "$ref": "#/definitions/schema"
+            "$ref": "##/definitions/schema"
           },
           "default": {}
         },
@@ -980,10 +980,10 @@
           "default": false
         },
         "xml": {
-          "$ref": "#/definitions/xml"
+          "$ref": "##/definitions/xml"
         },
         "externalDocs": {
-          "$ref": "#/definitions/externalDocs"
+          "$ref": "##/definitions/externalDocs"
         },
         "example": {}
       },
@@ -994,7 +994,7 @@
       "description": "A deterministic version of a JSON Schema object.",
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       },
       "required": ["type"],
@@ -1003,16 +1003,16 @@
           "type": "string"
         },
         "title": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/title"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/title"
         },
         "description": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/description"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/description"
         },
         "default": {
-          "$ref": "http://json-schema.org/draft-04/schema#/properties/default"
+          "$ref": "http://json-schema.org/draft-04/schema##/properties/default"
         },
         "required": {
-          "$ref": "http://json-schema.org/draft-04/schema#/definitions/stringArray"
+          "$ref": "http://json-schema.org/draft-04/schema##/definitions/stringArray"
         },
         "type": {
           "type": "string",
@@ -1023,7 +1023,7 @@
           "default": false
         },
         "externalDocs": {
-          "$ref": "#/definitions/externalDocs"
+          "$ref": "##/definitions/externalDocs"
         },
         "example": {}
       },
@@ -1041,61 +1041,61 @@
           "type": "string"
         },
         "items": {
-          "$ref": "#/definitions/primitivesItems"
+          "$ref": "##/definitions/primitivesItems"
         },
         "collectionFormat": {
-          "$ref": "#/definitions/collectionFormat"
+          "$ref": "##/definitions/collectionFormat"
         },
         "default": {
-          "$ref": "#/definitions/default"
+          "$ref": "##/definitions/default"
         },
         "maximum": {
-          "$ref": "#/definitions/maximum"
+          "$ref": "##/definitions/maximum"
         },
         "exclusiveMaximum": {
-          "$ref": "#/definitions/exclusiveMaximum"
+          "$ref": "##/definitions/exclusiveMaximum"
         },
         "minimum": {
-          "$ref": "#/definitions/minimum"
+          "$ref": "##/definitions/minimum"
         },
         "exclusiveMinimum": {
-          "$ref": "#/definitions/exclusiveMinimum"
+          "$ref": "##/definitions/exclusiveMinimum"
         },
         "maxLength": {
-          "$ref": "#/definitions/maxLength"
+          "$ref": "##/definitions/maxLength"
         },
         "minLength": {
-          "$ref": "#/definitions/minLength"
+          "$ref": "##/definitions/minLength"
         },
         "pattern": {
-          "$ref": "#/definitions/pattern"
+          "$ref": "##/definitions/pattern"
         },
         "maxItems": {
-          "$ref": "#/definitions/maxItems"
+          "$ref": "##/definitions/maxItems"
         },
         "minItems": {
-          "$ref": "#/definitions/minItems"
+          "$ref": "##/definitions/minItems"
         },
         "uniqueItems": {
-          "$ref": "#/definitions/uniqueItems"
+          "$ref": "##/definitions/uniqueItems"
         },
         "enum": {
-          "$ref": "#/definitions/enum"
+          "$ref": "##/definitions/enum"
         },
         "multipleOf": {
-          "$ref": "#/definitions/multipleOf"
+          "$ref": "##/definitions/multipleOf"
         }
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
     "security": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/securityRequirement"
+        "$ref": "##/definitions/securityRequirement"
       },
       "uniqueItems": true
     },
@@ -1133,7 +1133,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1149,12 +1149,12 @@
           "type": "string"
         },
         "externalDocs": {
-          "$ref": "#/definitions/externalDocs"
+          "$ref": "##/definitions/externalDocs"
         }
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1163,22 +1163,22 @@
       "additionalProperties": {
         "oneOf": [
           {
-            "$ref": "#/definitions/basicAuthenticationSecurity"
+            "$ref": "##/definitions/basicAuthenticationSecurity"
           },
           {
-            "$ref": "#/definitions/apiKeySecurity"
+            "$ref": "##/definitions/apiKeySecurity"
           },
           {
-            "$ref": "#/definitions/oauth2ImplicitSecurity"
+            "$ref": "##/definitions/oauth2ImplicitSecurity"
           },
           {
-            "$ref": "#/definitions/oauth2PasswordSecurity"
+            "$ref": "##/definitions/oauth2PasswordSecurity"
           },
           {
-            "$ref": "#/definitions/oauth2ApplicationSecurity"
+            "$ref": "##/definitions/oauth2ApplicationSecurity"
           },
           {
-            "$ref": "#/definitions/oauth2AccessCodeSecurity"
+            "$ref": "##/definitions/oauth2AccessCodeSecurity"
           }
         ]
       }
@@ -1198,7 +1198,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1224,7 +1224,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1242,7 +1242,7 @@
           "enum": ["implicit"]
         },
         "scopes": {
-          "$ref": "#/definitions/oauth2Scopes"
+          "$ref": "##/definitions/oauth2Scopes"
         },
         "authorizationUrl": {
           "type": "string",
@@ -1254,7 +1254,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1272,7 +1272,7 @@
           "enum": ["password"]
         },
         "scopes": {
-          "$ref": "#/definitions/oauth2Scopes"
+          "$ref": "##/definitions/oauth2Scopes"
         },
         "tokenUrl": {
           "type": "string",
@@ -1284,7 +1284,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1302,7 +1302,7 @@
           "enum": ["application"]
         },
         "scopes": {
-          "$ref": "#/definitions/oauth2Scopes"
+          "$ref": "##/definitions/oauth2Scopes"
         },
         "tokenUrl": {
           "type": "string",
@@ -1314,7 +1314,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1332,7 +1332,7 @@
           "enum": ["accessCode"]
         },
         "scopes": {
-          "$ref": "#/definitions/oauth2Scopes"
+          "$ref": "##/definitions/oauth2Scopes"
         },
         "authorizationUrl": {
           "type": "string",
@@ -1348,7 +1348,7 @@
       },
       "patternProperties": {
         "^x-": {
-          "$ref": "#/definitions/vendorExtension"
+          "$ref": "##/definitions/vendorExtension"
         }
       }
     },
@@ -1361,7 +1361,7 @@
     "mediaTypeList": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/mimeType"
+        "$ref": "##/definitions/mimeType"
       },
       "uniqueItems": true
     },
@@ -1372,10 +1372,10 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "#/definitions/parameter"
+            "$ref": "##/definitions/parameter"
           },
           {
-            "$ref": "#/definitions/jsonReference"
+            "$ref": "##/definitions/jsonReference"
           }
         ]
       },
@@ -1401,49 +1401,49 @@
       "default": "csv"
     },
     "title": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/title"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/title"
     },
     "description": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/description"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/description"
     },
     "default": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/default"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/default"
     },
     "multipleOf": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/multipleOf"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/multipleOf"
     },
     "maximum": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/maximum"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/maximum"
     },
     "exclusiveMaximum": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMaximum"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/exclusiveMaximum"
     },
     "minimum": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/minimum"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/minimum"
     },
     "exclusiveMinimum": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/exclusiveMinimum"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/exclusiveMinimum"
     },
     "maxLength": {
-      "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+      "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveInteger"
     },
     "minLength": {
-      "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+      "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveIntegerDefault0"
     },
     "pattern": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/pattern"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/pattern"
     },
     "maxItems": {
-      "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveInteger"
+      "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveInteger"
     },
     "minItems": {
-      "$ref": "http://json-schema.org/draft-04/schema#/definitions/positiveIntegerDefault0"
+      "$ref": "http://json-schema.org/draft-04/schema##/definitions/positiveIntegerDefault0"
     },
     "uniqueItems": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/uniqueItems"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/uniqueItems"
     },
     "enum": {
-      "$ref": "http://json-schema.org/draft-04/schema#/properties/enum"
+      "$ref": "http://json-schema.org/draft-04/schema##/properties/enum"
     },
     "jsonReference": {
       "type": "object",

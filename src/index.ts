@@ -60,7 +60,10 @@ API.add('GET', '/callback', async (request, response) => {
         }),
       },
     )
-    const tokenResult = await tokenResponse.json()
+    const tokenResult = await tokenResponse.json<{
+      access_token: string
+      error: unknown
+    }>()
 
     if (tokenResult.error) {
       response.send(401, JSON.stringify(tokenResult))
@@ -79,7 +82,11 @@ API.add('GET', '/callback', async (request, response) => {
       throw new Error(await userResponse.text())
     }
 
-    const userResult = await userResponse.json()
+    const userResult = await userResponse.json<{
+      id: string
+      login: string
+      avatar_url: string
+    }>()
 
     const { id: userId } = await createUser(userResult)
     const sessionId = await createSession({ userId })
@@ -103,14 +110,23 @@ API.add('GET', '/session', async (request, response) => {
       const user = await getUser(session.userId)
 
       if (user) {
-        return response.send(200, { login: user.login })
+        return response.send(200, {
+          login: user.login,
+          avatarUrl: user.avatarUrl,
+        })
       }
     } else {
-      return response.send(302, null, { location: '/login' })
+      return response.send(401, {
+        code: 'SESSION_EXPIRED',
+        message: 'Session expired',
+      })
     }
   }
 
-  return response.send(401)
+  return response.send(401, {
+    code: 'SESSION_NOT_FOUND',
+    message: 'No valid session',
+  })
 })
 
 API.add('GET', '/:user', async (request, response) => {

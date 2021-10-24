@@ -5,6 +5,15 @@ import { isValidSchema } from './validation'
 
 declare const KV_SCHEMAS: KV.Namespace
 
+interface Metadata {
+  owner: string
+  id: string
+  namespaceId: string
+  name: string
+  version: string
+  storedAt: number
+}
+
 const getSchemaKey = (
   userName: string,
   namespaceId?: string,
@@ -21,7 +30,7 @@ export const createSchema = async (
     throw new Error('Data is not a valid Swagger or OpenAPI schema')
   }
 
-  await KV_SCHEMAS.put(
+  await KV_SCHEMAS.put<Metadata>(
     getSchemaKey(user.login, namespaceId, schemaId),
     JSON.stringify(schemaData),
     {
@@ -55,12 +64,15 @@ export const getSchema = async (
 export const getSchemaList = async (
   user: User,
   namespaceId?: string,
-): Promise<KV.KeyInfo[]> => {
-  const schemaList = await KV_SCHEMAS.list({
+): Promise<KV.KeyInfo<Metadata>[]> => {
+  const schemaList = await KV_SCHEMAS.list<Metadata>({
     prefix: getSchemaKey(user.login, namespaceId) + ':',
   })
   return schemaList.keys
 }
+
+export const deleteSchemaRaw = (key: string): Promise<void> =>
+  KV_SCHEMAS.delete(key)
 
 export const deleteSchema = async (
   user: User,
@@ -70,7 +82,7 @@ export const deleteSchema = async (
   const schema = await getSchema(user, namespaceId, schemaId)
 
   if (schema) {
-    await KV_SCHEMAS.delete(getSchemaKey(user.login, namespaceId, schemaId))
+    await deleteSchemaRaw(getSchemaKey(user.login, namespaceId, schemaId))
     return true
   }
 
