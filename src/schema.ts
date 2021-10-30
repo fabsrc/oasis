@@ -7,12 +7,14 @@ declare const KV_SCHEMAS: KV.Namespace
 
 interface Metadata {
   owner: string
+  key: string
   id: string
   namespaceId: string
   name: string
   version: string
   storedAt: number
   path: string
+  access?: 'PUBLIC' | 'PRIVATE'
 }
 
 export const SCHEMA_METADATA_HEADER_NAME = 'oasis-schema'
@@ -38,6 +40,7 @@ export const createSchema = async (
   const key = getSchemaKey(user.login, namespaceId, schemaId)
 
   const metadata = {
+    key,
     id: schemaId,
     owner: user.id,
     namespaceId: namespaceId,
@@ -45,6 +48,7 @@ export const createSchema = async (
     version: schemaData.info.version,
     storedAt: Date.now(),
     path: getSchemaPath(key),
+    access: 'PRIVATE' as const,
   }
 
   await KV_SCHEMAS.put<Metadata>(key, JSON.stringify(schemaData), { metadata })
@@ -53,11 +57,11 @@ export const createSchema = async (
 }
 
 export const getSchema = async (
-  user: User,
+  userName: string,
   namespaceId: string,
   schemaId: string,
 ): Promise<{ schema: OpenAPI.Document | null; metadata: Metadata | null }> => {
-  const key = getSchemaKey(user.login, namespaceId, schemaId)
+  const key = getSchemaKey(userName, namespaceId, schemaId)
   const data = await KV_SCHEMAS.getWithMetadata<OpenAPI.Document, Metadata>(
     key,
     { type: 'json' },
@@ -84,7 +88,7 @@ export const deleteSchema = async (
   namespaceId: string,
   schemaId: string,
 ): Promise<boolean> => {
-  const schema = await getSchema(user, namespaceId, schemaId)
+  const { schema } = await getSchema(user.login, namespaceId, schemaId)
 
   if (schema) {
     await deleteSchemaRaw(getSchemaKey(user.login, namespaceId, schemaId))
@@ -92,4 +96,30 @@ export const deleteSchema = async (
   }
 
   return false
+}
+
+export const modifySchemaAccess = async (
+  user: User,
+  namespaceId: string,
+  schemaId: string,
+  access: Metadata['access'],
+): Promise<{ schema: OpenAPI.Document | null; metadata: Metadata | null }> => {
+  const { schema, metadata } = await getSchema(
+    user.login,
+    namespaceId,
+    schemaId,
+  )
+
+  if (schema && metadata) {
+    const newMetadata = {
+      ...metadata,
+      access,
+    }
+    await KV_SCHEMAS.put<Metadata>(metadata.key, JSON.stringify(schema), {
+      metadata: newMetadata,
+    })
+    return { schema, metadata: newMetadata }
+  }
+
+  return { schema, metadata }
 }

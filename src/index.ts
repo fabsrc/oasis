@@ -6,6 +6,7 @@ import {
   deleteSchemaRaw,
   getSchema,
   getSchemaList,
+  modifySchemaAccess,
   SCHEMA_METADATA_HEADER_NAME,
 } from './schema'
 import {
@@ -23,7 +24,12 @@ import {
   removeNamespace,
 } from './user'
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
-import { isValidGithubUsername, isValidId, isValidSchema } from './validation'
+import {
+  isValidAccessValue,
+  isValidGithubUsername,
+  isValidId,
+  isValidSchema,
+} from './validation'
 
 declare const GITHUB_CLIENT_ID: string
 declare const GITHUB_CLIENT_SECRET: string
@@ -158,6 +164,7 @@ API.add('GET', '/:user', async (request, response) => {
       namespaceId: l.metadata?.namespaceId,
       name: l.metadata?.name,
       version: l.metadata?.version,
+      access: l.metadata?.access,
       path: l.name.replaceAll(':', '/'),
     })),
     namespaces: sessionUser.namespaces?.map((ns) => ({
@@ -301,10 +308,6 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
 
   const [schemaId, extension = 'html'] = schema.split('.')
 
-  if (!sessionUser || sessionUser.login !== user) {
-    return response.send(400, { message: 'Invalid request' })
-  }
-
   if (!isValidGithubUsername(user)) {
     return response.send(400, { message: 'Invalid username' })
   }
@@ -314,10 +317,14 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
   }
 
   const { schema: schemaData, metadata } = await getSchema(
-    sessionUser,
+    user,
     namespace,
     schemaId,
   )
+
+  if (metadata?.access !== 'PUBLIC' && sessionUser?.login !== user) {
+    return response.send(401, { message: 'Access denied' })
+  }
 
   if (!schemaData) {
     return response.send(404, { message: 'Not found' })
@@ -400,6 +407,48 @@ API.add('DELETE', '/:user/:namespace/:schema', async (request, response) => {
 
   return response.send(400, { message: 'Invalid schema' })
 })
+
+API.add(
+  'PUT',
+  '/:user/:namespace/:schema/access',
+  async (request, response) => {
+    const [, session] = await getSession(request)
+    const sessionUser = await getUser(session?.userId)
+    const { user, namespace, schema } = request.params
+    const { access } = await request.body.json<{ access: string }>()
+
+    if (!sessionUser || sessionUser.login !== user) {
+      return response.send(400, { message: 'Invalid request' })
+    }
+
+    if (!isValidGithubUsername(user)) {
+      return response.send(400, { message: 'Invalid username' })
+    }
+
+    if (!isValidId(namespace)) {
+      return response.send(400, { message: 'Invalid namespace' })
+    }
+
+    if (!isValidAccessValue(access)) {
+      return response.send(400, { message: 'Invalid access value' })
+    }
+
+    const { metadata } = await modifySchemaAccess(
+      sessionUser,
+      namespace,
+      schema,
+      access,
+    )
+
+    if (metadata) {
+      return response.send(204, null, {
+        [SCHEMA_METADATA_HEADER_NAME]: JSON.stringify(metadata),
+      })
+    }
+
+    return response.send(404, { message: 'Schema not found' })
+  },
+)
 
 const serverResponse = async (event: FetchEvent) => {
   const url = new URL(event.request.url)

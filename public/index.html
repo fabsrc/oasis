@@ -81,12 +81,16 @@
                     </td>
                     <td
                       class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      <span x-text="schema.name"></span>
+                      <span x-text="schema.name"></span> <span class="text-gray-300">(<span
+                          x-text="schema.version"></span>)</span>
                     </td>
-
                     <td
                       class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      <span x-text="schema.version"></span>
+                      <label class="flex items-center">
+                        <input type="checkbox" class="form-checkbox" x-bind:checked="schema.access === 'PUBLIC'"
+                          @click="fetch(schema.path + '/access', {method: 'PUT', body: JSON.stringify({access: $event.target.checked ? 'PUBLIC' : 'PRIVATE'})})">
+                        <span class="ml-2 text-gray-600">Public</span>
+                      </label>
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
                       <div class="flex justify-end space-x-4">
@@ -265,15 +269,17 @@
             return
           }
 
-          fetch(`/${Alpine.store('session').login}/${slugify(this.formData.id, {
+          const id = slugify(this.formData.id, {
             lower: true,
-          })}`, {
+          })
+
+          fetch(`/${Alpine.store('session').login}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.formData)
           }).then((res) => {
             if (res.ok) {
-              this.$dispatch('add-namespace', this.formData)
+              this.$dispatch('add-namespace', { id, name: this.formData.name ?? id })
               this.reset()
             }
           })
@@ -298,9 +304,11 @@
             return
           }
 
-          fetch(`/${Alpine.store('session').login}/${Alpine.store('modals').schemaNamespaceId}/${slugify(this.formData.id, {
+          const id = slugify(this.formData.id, {
             lower: true,
-          })}`, {
+          })
+
+          fetch(`/${Alpine.store('session').login}/${Alpine.store('modals').schemaNamespaceId}/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: this.formData.schema

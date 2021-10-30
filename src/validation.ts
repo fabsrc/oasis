@@ -40,3 +40,7 @@ export const isValidId = (id: string): boolean => {
   const re = /^[\w-]{3,30}$/iu
   return re.test(id)
 }
+
+export const isValidAccessValue = (
+  access: string,
+): access is 'PUBLIC' | 'PRIVATE' => ['PUBLIC', 'PRIVATE'].includes(access)
