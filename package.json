@@ -8,7 +8,7 @@
     "dev": "wrangler dev",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
-    "test": "jest --config jestconfig.json --verbose"
+    "test": "jest --passWithNoTests"
   },
   "author": "Fabian Schneider <git@fs.codes>",
   "license": "MIT",
