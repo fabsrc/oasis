@@ -15,7 +15,7 @@ import {
   removeNamespace,
 } from './user'
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler'
-import { isValidGithubUsername, isValidNamespace } from './validation'
+import { isValidGithubUsername, isValidId, isValidSchema } from './validation'
 
 declare const GITHUB_CLIENT_ID: string
 declare const GITHUB_CLIENT_SECRET: string
@@ -173,7 +173,7 @@ API.add('PUT', '/:user/:namespace', async (request, response) => {
     return response.send(400, { message: 'Invalid username' })
   }
 
-  if (!isValidNamespace(namespace)) {
+  if (!isValidId(namespace)) {
     return response.send(400, { message: 'Invalid namespace' })
   }
 
@@ -199,7 +199,7 @@ API.add('DELETE', '/:user/:namespace', async (request, response) => {
     return response.send(400, { message: 'Invalid username' })
   }
 
-  if (!isValidNamespace(namespace)) {
+  if (!isValidId(namespace)) {
     return response.send(400, { message: 'Invalid namespace' })
   }
 
@@ -225,8 +225,12 @@ API.add('PUT', '/:user/:namespace/:schema', async (request, response) => {
     return response.send(400, { message: 'Invalid username' })
   }
 
-  if (!isValidNamespace(namespace)) {
+  if (!isValidId(namespace)) {
     return response.send(400, { message: 'Invalid namespace' })
+  }
+
+  if (!isValidId(schema)) {
+    return response.send(400, { message: 'Invalid schema id' })
   }
 
   const userNamespace = await getNamespace(sessionUser.id, namespace)
@@ -236,20 +240,22 @@ API.add('PUT', '/:user/:namespace/:schema', async (request, response) => {
   }
 
   try {
-    // TODO: Add OAS schema validation
     const schemaData = await request.body.json()
-    if (!schemaData) {
+    if (!schemaData || !isValidSchema(schemaData)) {
       return response.send(400, { message: 'Invalid schema' })
     }
 
-    const newSchema = await createSchema(
+    const { schema: newSchema, metadata } = await createSchema(
       sessionUser,
       namespace,
       schema,
       schemaData,
     )
 
-    return response.send(201, newSchema)
+    return response.send(201, newSchema, {
+      'content-type': 'application/json',
+      ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
+    })
   } catch (error) {
     console.error((error as Error).message)
     return response.send(500, { message: (error as Error).message })
@@ -271,11 +277,15 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
     return response.send(400, { message: 'Invalid username' })
   }
 
-  if (!isValidNamespace(namespace)) {
+  if (!isValidId(namespace)) {
     return response.send(400, { message: 'Invalid namespace' })
   }
 
-  const schemaData = await getSchema(sessionUser, namespace, schemaId)
+  const { schema: schemaData, metadata } = await getSchema(
+    sessionUser,
+    namespace,
+    schemaId,
+  )
 
   if (!schemaData) {
     return response.send(404, { message: 'Not found' })
@@ -284,12 +294,14 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
   if (extension === 'json') {
     return response.send(200, schemaData, {
       'content-type': 'application/json',
+      ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
     })
   }
 
   if (extension === 'yaml' || extension === 'yml') {
     return response.send(200, yamlStringify(schemaData), {
       'content-type': 'text/yaml',
+      ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
     })
   }
 
@@ -315,7 +327,10 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
     </body>
     </html>
     `,
-      { 'content-type': 'text/html' },
+      {
+        'content-type': 'text/html',
+        ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
+      },
     )
   }
 
@@ -335,7 +350,7 @@ API.add('DELETE', '/:user/:namespace/:schema', async (request, response) => {
     return response.send(400, { message: 'Invalid username' })
   }
 
-  if (!isValidNamespace(namespace)) {
+  if (!isValidId(namespace)) {
     return response.send(400, { message: 'Invalid namespace' })
   }
 

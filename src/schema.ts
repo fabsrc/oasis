@@ -12,6 +12,7 @@ interface Metadata {
   name: string
   version: string
   storedAt: number
+  path: string
 }
 
 const getSchemaKey = (
@@ -20,45 +21,47 @@ const getSchemaKey = (
   schemaId?: string,
 ) => [userName, namespaceId, schemaId].filter(Boolean).join(':')
 
+const getSchemaPath = (key: string) => key.replaceAll(':', '/')
+
 export const createSchema = async (
   user: User,
   namespaceId: string,
   schemaId: string,
   schemaData: unknown,
-): Promise<OpenAPI.Document> => {
+): Promise<{ schema: OpenAPI.Document; metadata: Metadata }> => {
   if (!isValidSchema(schemaData)) {
     throw new Error('Data is not a valid Swagger or OpenAPI schema')
   }
 
-  await KV_SCHEMAS.put<Metadata>(
-    getSchemaKey(user.login, namespaceId, schemaId),
-    JSON.stringify(schemaData),
-    {
-      metadata: {
-        owner: user.id,
-        id: schemaId,
-        namespaceId: namespaceId,
-        name: schemaData.info.title,
-        version: schemaData.info.version,
-        storedAt: Date.now(),
-      },
-    },
-  )
+  const key = getSchemaKey(user.login, namespaceId, schemaId)
 
-  return schemaData
+  const metadata = {
+    id: schemaId,
+    owner: user.id,
+    namespaceId: namespaceId,
+    name: schemaData.info.title,
+    version: schemaData.info.version,
+    storedAt: Date.now(),
+    path: getSchemaPath(key),
+  }
+
+  await KV_SCHEMAS.put<Metadata>(key, JSON.stringify(schemaData), { metadata })
+
+  return { schema: schemaData, metadata }
 }
 
 export const getSchema = async (
   user: User,
   namespaceId: string,
   schemaId: string,
-): Promise<OpenAPI.Document | null> => {
-  const schema = await KV_SCHEMAS.get<OpenAPI.Document>(
-    getSchemaKey(user.login, namespaceId, schemaId),
+): Promise<{ schema: OpenAPI.Document | null; metadata: Metadata | null }> => {
+  const key = getSchemaKey(user.login, namespaceId, schemaId)
+  const data = await KV_SCHEMAS.getWithMetadata<OpenAPI.Document, Metadata>(
+    key,
     { type: 'json' },
   )
 
-  return schema ?? null
+  return { schema: data?.value ?? null, metadata: data?.metadata ?? null }
 }
 
 export const getSchemaList = async (

@@ -36,7 +36,7 @@ export const isValidGithubUsername = (username: string): boolean => {
   return re.test(username)
 }
 
-export const isValidNamespace = (namespace: string): boolean => {
+export const isValidId = (id: string): boolean => {
   const re = /^[\w-]{3,30}$/iu
-  return re.test(namespace)
+  return re.test(id)
 }

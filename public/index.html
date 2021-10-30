@@ -33,7 +33,7 @@
 
 
   <main class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-20">
-    <template x-data x-if="$store.session.exists()" x-cloak>
+    <template x-data x-if="$store.session.exists()">
       <div class="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded border border-gray-200">
         <div class="rounded-t mb-0 px-6 py-3 border-0 border-b border-gray-200">
           <div class="flex flex-wrap items-center space-between">
@@ -41,87 +41,19 @@
               <h3 class="font-semibold text-base text-gray-600">Schemas</h3>
             </div>
 
-            <div x-data="{ 'showModal': false }" @keydown.escape="showModal = false" x-cloak>
+            <template x-data x-if="true">
               <button
                 class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
-                @click="showModal = true">
+                @click="$store.modals.openNamespaceModal()">
                 Add Namespace
               </button>
-
-              <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="showModal"
-                :class="{ 'fixed inset-0 z-10 flex items-center justify-center': showModal }">
-                <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
-                  x-show="showModal" @click.away="showModal = false">
-
-                  <div class="flex justify-between items-center pb-3">
-                    <p class="font-sembold text-gray-600 font-semibold">Add Namespace</p>
-                    <div class="cursor-pointer z-50" @click="showModal = false">
-                      <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                        viewBox="0 0 18 18">
-                        <path
-                          d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
-                        </path>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <form x-data="namespaceForm()" @submit.prevent="submitData">
-                    <div class="flex flex gap-x-5">
-                      <div class="w-full">
-                        <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
-                          ID
-                        </label>
-                        <input
-                          class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
-                          x-model="formData.id" id="id" type="text" placeholder="ID">
-                      </div>
-                      <div class="w-full">
-                        <label class="block text-gray-600 text-sm font-bold mb-2" for="name">
-                          Name
-                        </label>
-                        <input
-                          class="appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
-                          x-model="formData.name" id="name" type="text" placeholder="Name">
-                      </div>
-                    </div>
-
-
-                    <div class="flex justify-end pt-2">
-                      <button
-                        class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
-                        type="submit" @click="showModal = false">Create</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+            </template>
           </div>
         </div>
 
         <div x-data="namespaces" @add-namespace.window="add($event.detail.id, $event.detail.name)"
-          class="block w-full overflow-x-auto">
+          @add-schema.window="addSchema($event.detail)" class="block w-full overflow-x-auto">
           <table class="items-center bg-transparent w-full border-collapse">
-            <!-- <thead>
-              <tr>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                  ID
-                </th>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                  Name
-                </th>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                  Version
-                </th>
-                <th
-                  class="px-6 bg-blueGray-50 text-blueGray-500 align-middle border border-solid border-blueGray-100 py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left">
-                </th>
-              </tr>
-            </thead> -->
-
-
             <template x-for="namespace in namespaces">
               <tbody>
                 <tr>
@@ -131,7 +63,8 @@
                         <h4 class="font-semibold text-xs text-gray-600" x-text="namespace.name"></h4>
                       </div>
                       <div class="flex space-x-4">
-                        <a class="text-gray-600 hover:opacity-50 cursor-pointer">Add Schema</a>
+                        <a class="text-gray-600 hover:opacity-50 cursor-pointer"
+                          @click="$store.modals.openSchemaModal(namespace.id)">Add Schema</a>
                         <a class="text-red-600 hover:opacity-50 cursor-pointer"
                           @click="confirm('Delete namespace?') && fetch($store.session.login + '/' + namespace.id, {method: 'DELETE'}).then(() => {remove(namespace.id)})">Delete</a>
 
@@ -177,7 +110,7 @@
       </div>
     </template>
 
-    <template x-data x-if="!$store.session.exists()" x-cloak>
+    <template x-data x-if="!$store.session.exists()">
       <div class="text-center">
         <div class="text-gray-600">Sign in with GitHub to create, view, update and delete OpenAPI schemas.</div>
         <div class="mt-8">
@@ -191,10 +124,109 @@
       </div>
     </template>
 
+    <template x-data x-if="true" @keydown.escape.window="$store.modals.closeNamespaceModal()">
+      <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showNamespaceModal"
+        :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showNamespaceModal}">
+        <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
+          x-show="$store.modals.showNamespaceModal" @click.away="$store.modals.closeNamespaceModal()">
+
+          <div class="flex justify-between items-center pb-3">
+            <p class="font-sembold text-gray-600 font-semibold">Add Namespace</p>
+            <div class="cursor-pointer z-50" @click="$store.modals.closeNamespaceModal()">
+              <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                viewBox="0 0 18 18">
+                <path
+                  d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                </path>
+              </svg>
+            </div>
+          </div>
+
+          <form x-data="namespaceForm()" @submit.prevent="submitData">
+            <div class="flex gap-x-5">
+              <div class="w-full">
+                <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
+                  ID
+                </label>
+                <input
+                  class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
+                  x-model="formData.id" id="id" type="text" placeholder="ID" required>
+              </div>
+              <div class="w-full">
+                <label class="block text-gray-600 text-sm font-bold mb-2" for="name">
+                  Name
+                </label>
+                <input
+                  class="appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
+                  x-model="formData.name" id="name" type="text" placeholder="Name">
+              </div>
+            </div>
+
+
+            <div class="flex justify-end pt-2">
+              <button
+                class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                type="submit" @click="$store.modals.closeNamespaceModal()">Create</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+
+    <template x-data x-if="true" @keydown.escape.window="$store.modals.closeSchemaModal()">
+      <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showSchemaModal"
+        :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showSchemaModal}">
+        <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
+          x-show="$store.modals.showSchemaModal" @click.away="$store.modals.closeSchemaModal()">
+
+          <div class="flex justify-between items-center pb-3">
+            <p class="font-sembold text-gray-600 font-semibold">Add Schema</p>
+            <div class="cursor-pointer z-50" @click="$store.modals.closeSchemaModal()">
+              <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                viewBox="0 0 18 18">
+                <path
+                  d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                </path>
+              </svg>
+            </div>
+          </div>
+
+          <form x-data="schemaForm()" @submit.prevent="submitData">
+            <div class="flex flex-col gap-y-5">
+              <div class="w-full">
+                <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
+                  ID
+                </label>
+                <input
+                  class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
+                  x-model="formData.id" id="id" type="text" placeholder="ID">
+              </div>
+              <div class="w-full">
+                <label class="block text-gray-600 text-sm font-bold mb-2" for="schema">
+                  Schema
+                </label>
+                <textarea
+                  class="font-mono appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
+                  x-model="formData.schema" id="schema" rows="10" placeholder="Schema in JSON format">
+              </textarea>
+              </div>
+            </div>
+
+
+            <div class="flex justify-end pt-2">
+              <button
+                class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                type="submit" @click="$store.modals.closeSchemaModal()">Create</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+
   </main>
 
   <footer class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
-    2021
+    &copy; 2021
   </footer>
 
   <script>
@@ -204,12 +236,17 @@
           id: '',
           name: null,
         },
-        message: '',
+
+        reset() {
+          this.formData = {
+            id: '',
+            name: null,
+          }
+        },
 
         submitData() {
-          this.message = ''
-
           if (!this.formData.id) {
+            console.warn('Invalid data')
             return
           }
 
@@ -219,12 +256,42 @@
             body: JSON.stringify(this.formData)
           }).then(() => {
             this.$dispatch('add-namespace', this.formData)
-            this.formData.id = ''
-            this.formData.name = null
+            this.reset()
           })
-            .catch(() => {
-              // this.message = 'Ooops! Something went wrong!'
-            })
+        }
+      }
+    }
+
+    function schemaForm() {
+      return {
+        formData: {
+          id: '',
+          schema: '',
+        },
+
+        reset() {
+          this.formData = { id: '', schema: '' }
+        },
+
+        submitData() {
+          if (!this.formData.id || !this.formData.schema) {
+            console.warn('Invalid data')
+            return
+          }
+
+          fetch(`/${Alpine.store('session').login}/${Alpine.store('modals').schemaNamespaceId}/${this.formData.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: this.formData.schema
+          }).then((res) => {
+            try {
+              const metadata = JSON.parse(res.headers.get('oasis-schema'))
+              this.$dispatch('add-schema', metadata)
+            } catch (err) {
+              console.error(err)
+            }
+            this.reset()
+          })
         }
       }
     }
@@ -250,6 +317,31 @@
         }
       })
 
+      Alpine.store('modals', {
+        showNamespaceModal: false,
+
+        openNamespaceModal() {
+          this.showNamespaceModal = true
+        },
+
+        closeNamespaceModal() {
+          this.showNamespaceModal = false
+        },
+
+        showSchemaModal: false,
+        schemaNamespaceId: null,
+
+        openSchemaModal(namespaceId) {
+          this.showSchemaModal = true
+          this.schemaNamespaceId = namespaceId
+        },
+
+        closeSchemaModal() {
+          this.showSchemaModal = false
+          schemaNamespaceId = null
+        },
+      })
+
       Alpine.data('namespaces', () => ({
         namespaces: [],
 
@@ -272,6 +364,15 @@
 
         remove(id) {
           this.namespaces = this.namespaces.filter(s => s.id !== id)
+        },
+
+        addSchema({ id, name, namespaceId, version, path }) {
+          this.namespaces = this.namespaces.map(ns => {
+            if (ns.id === namespaceId) {
+              return { ...ns, schemas: [...ns.schemas.filter(s => s.id !== id), { id, name, version, path }] }
+            }
+            return ns
+          })
         },
 
         removeSchema(path) {
