@@ -12,8 +12,11 @@ kv_namespaces = [
     { binding = "KV_SCHEMAS", id = "5c95d17eea3345da8438497a83ee353e", preview_id = "5c95d17eea3345da8438497a83ee353e" }
 ]
 
+[vars]
+GITHUB_CLIENT_ID = "daff23044c41eac40b68"
+
 [build]
-command = "webpack"
+command = "npm run build"
 [build.upload]
 format = "service-worker"
 

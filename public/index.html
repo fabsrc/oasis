@@ -176,7 +176,7 @@
     <template x-data x-if="true" @keydown.escape.window="$store.modals.closeSchemaModal()">
       <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showSchemaModal"
         :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showSchemaModal}">
-        <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
+        <div class="bg-white w-11/12 md:max-w-xl mx-auto rounded shadow-lg py-4 text-left px-6"
           x-show="$store.modals.showSchemaModal" @click.away="$store.modals.closeSchemaModal()">
 
           <div class="flex justify-between items-center pb-3">
@@ -207,7 +207,7 @@
                 </label>
                 <textarea
                   class="font-mono appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
-                  x-model="formData.schema" id="schema" rows="10" placeholder="Schema in JSON format">
+                  x-model="formData.schema" id="schema" rows="10" placeholder="Add OpenAPI or Swagger Schema in JSON format">
               </textarea>
               </div>
             </div>
@@ -363,10 +363,10 @@
             return fetch('/' + this.$store.session.login)
               .then(response => response.json())
               .then(data => {
-                this.namespaces = data.namespaces.map(ns => ({
+                this.namespaces = data.namespaces?.map(ns => ({
                   ...ns,
                   schemas: (data.schemas ?? []).filter(s => s.namespaceId === ns.id)
-                }))
+                })) ?? []
               })
           }
         },

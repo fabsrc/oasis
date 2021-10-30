@@ -32,7 +32,7 @@ const API = new Router()
 
 API.add('GET', '/login', (_request, response) => {
   response.send(302, null, {
-    location: `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=http://localhost:8787/callback`,
+    location: `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=https://oasis.fscodes.workers.dev/callback`,
   })
 })
 
