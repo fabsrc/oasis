@@ -60,7 +60,7 @@
                   <td colspan="4" class="px-6 align-middle text-xs whitespace-nowrap p-4">
                     <div class="flex justify-between">
                       <div>
-                        <h4 class="font-semibold text-xs text-gray-600" x-text="namespace.name"></h4>
+                        <h4 class="font-semibold text-sm text-gray-600" x-text="namespace.name"></h4>
                       </div>
                       <div class="flex space-x-4">
                         <a class="text-gray-600 hover:opacity-50 cursor-pointer"
@@ -225,8 +225,21 @@
 
   </main>
 
-  <footer class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
-    &copy; 2021
+  <footer x-data class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
+    <div x-show="$store.session.login">
+      <div class="mb-2">
+        <span class="text-base" x-text="$store.session.login"></span>
+      </div>
+      <div>
+        <a href="/logout" class="hover:text-black-600 hover:opacity-50">Logout</a><span> •
+        </span><span class="hover:text-red-600 hover:opacity-50 cursor-pointer"
+          @click="confirm('Delete account and all data?') && fetch('/' + $store.session.login, {method: 'DELETE'}).then(() => {window.location.reload(false) })">Delete
+          Account</span>
+      </div>
+    </div>
+    <div class="mt-5">
+      &copy; 2021
+    </div>
   </footer>
 
   <script>
@@ -359,7 +372,7 @@
         },
 
         add(id, name = null) {
-          this.namespaces.push({ id, name })
+          this.namespaces.push({ id, name: name ?? id })
         },
 
         remove(id) {
@@ -369,7 +382,7 @@
         addSchema({ id, name, namespaceId, version, path }) {
           this.namespaces = this.namespaces.map(ns => {
             if (ns.id === namespaceId) {
-              return { ...ns, schemas: [...ns.schemas.filter(s => s.id !== id), { id, name, version, path }] }
+              return { ...ns, schemas: [...(ns.schemas?.filter(s => s.id !== id) ?? []), { id, name, version, path }] }
             }
             return ns
           })

@@ -15,6 +15,8 @@ interface Metadata {
   path: string
 }
 
+export const SCHEMA_METADATA_HEADER_NAME = 'oasis-schema'
+
 const getSchemaKey = (
   userName: string,
   namespaceId?: string,

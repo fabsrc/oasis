@@ -45,6 +45,14 @@ export const getUser = async (userId?: string): Promise<User | null> => {
   return user ?? null
 }
 
+export const deleteUser = async (userId?: string): Promise<void> => {
+  if (!userId) {
+    return
+  }
+
+  await KV_USERS.delete(userId)
+}
+
 export const addNamespace = async (
   userId: string,
   id: string,

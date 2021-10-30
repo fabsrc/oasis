@@ -1,6 +1,13 @@
 import { Router } from 'worktop'
 import { stringify as yamlStringify } from 'yaml'
-import { createSchema, deleteSchema, getSchema, getSchemaList } from './schema'
+import {
+  createSchema,
+  deleteSchema,
+  deleteSchemaRaw,
+  getSchema,
+  getSchemaList,
+  SCHEMA_METADATA_HEADER_NAME,
+} from './schema'
 import {
   createSession,
   deleteSession,
@@ -10,6 +17,7 @@ import {
 import {
   addNamespace,
   createUser,
+  deleteUser,
   getNamespace,
   getUser,
   removeNamespace,
@@ -159,6 +167,28 @@ API.add('GET', '/:user', async (request, response) => {
   })
 })
 
+API.add('DELETE', '/:user', async (request, response) => {
+  const [, session] = await getSession(request)
+  const sessionUser = await getUser(session?.userId)
+  const { user } = request.params
+
+  if (!sessionUser || sessionUser.login !== user) {
+    return response.send(400, { message: 'Invalid request' })
+  }
+
+  if (!isValidGithubUsername(user)) {
+    return response.send(400, { message: 'Invalid username' })
+  }
+
+  const list = await getSchemaList(sessionUser)
+  await Promise.all(list.map((l) => deleteSchemaRaw(l.name)))
+  await deleteUser(sessionUser.id)
+
+  return response.send(204, null, {
+    'set-cookie': `${SESSION_COOKIE_NAME}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+  })
+})
+
 API.add('PUT', '/:user/:namespace', async (request, response) => {
   const [, session] = await getSession(request)
   const sessionUser = await getUser(session?.userId)
@@ -254,7 +284,9 @@ API.add('PUT', '/:user/:namespace/:schema', async (request, response) => {
 
     return response.send(201, newSchema, {
       'content-type': 'application/json',
-      ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
+      ...(metadata && {
+        [SCHEMA_METADATA_HEADER_NAME]: JSON.stringify(metadata),
+      }),
     })
   } catch (error) {
     console.error((error as Error).message)
@@ -294,14 +326,18 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
   if (extension === 'json') {
     return response.send(200, schemaData, {
       'content-type': 'application/json',
-      ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
+      ...(metadata && {
+        [SCHEMA_METADATA_HEADER_NAME]: JSON.stringify(metadata),
+      }),
     })
   }
 
   if (extension === 'yaml' || extension === 'yml') {
     return response.send(200, yamlStringify(schemaData), {
       'content-type': 'text/yaml',
-      ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
+      ...(metadata && {
+        [SCHEMA_METADATA_HEADER_NAME]: JSON.stringify(metadata),
+      }),
     })
   }
 
@@ -329,7 +365,9 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
     `,
       {
         'content-type': 'text/html',
-        ...(metadata && { 'oasis-schema': JSON.stringify(metadata) }),
+        ...(metadata && {
+          [SCHEMA_METADATA_HEADER_NAME]: JSON.stringify(metadata),
+        }),
       },
     )
   }
