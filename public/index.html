@@ -20,233 +20,252 @@
 
 <body>
 
-  <header class="py-8 mt-10 text-center select-none">
-    <div class="text-4xl mb-2">
-      🏝
-    </div>
-    <div class="text-base text-gray-600 font-semibold">
-      <span style="letter-spacing: 1em; margin-right: -1em;">OASIS</span>
-    </div>
-    <div class="uppercase tracking-widest text-xs text-gray-300">
-      OpenAPI Schema Introspection
-    </div>
-  </header>
+  <div class="container max-w-screen-2xl mx-auto">
+
+    <header class="py-8 mt-10 text-center select-none">
+      <div class="text-4xl mb-2">
+        🏝
+      </div>
+      <div class="text-base text-gray-600 font-semibold">
+        <span style="letter-spacing: 1em; margin-right: -1em;">OASIS</span>
+      </div>
+      <div class="uppercase tracking-widest text-xs text-gray-300">
+        OpenAPI Schema Introspection
+      </div>
+    </header>
 
 
-  <main class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-20">
-    <template x-data x-if="$store.session.exists()">
-      <div class="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded border border-gray-200">
-        <div class="rounded-t mb-0 px-6 py-3 border-0 border-b border-gray-200">
-          <div class="flex flex-wrap items-center space-between">
-            <div class="w-full max-w-full flex-grow flex-1">
-              <h3 class="font-semibold text-base text-gray-600">Schemas</h3>
+    <main class="w-full xl:w-8/12 mb-12 xl:mb-0 px-4 mx-auto mt-20">
+      <template x-data x-if="$store.session.exists()">
+        <div class="flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded border border-gray-200">
+          <div class="rounded-t mb-0 px-6 py-3 border-0 border-b border-gray-200">
+            <div class="flex flex-wrap items-center space-between">
+              <div class="w-full max-w-full flex-grow flex-1">
+                <h3 class="font-semibold text-base text-gray-600">Schemas</h3>
+              </div>
+
+              <template x-data x-if="true">
+                <button
+                  class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                  @click="$store.modals.openNamespaceModal()">
+                  Add Namespace
+                </button>
+              </template>
             </div>
-
-            <template x-data x-if="true">
-              <button
-                class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
-                @click="$store.modals.openNamespaceModal()">
-                Add Namespace
-              </button>
-            </template>
           </div>
-        </div>
 
-        <div x-data="namespaces" @add-namespace.window="add($event.detail.id, $event.detail.name)"
-          @add-schema.window="addSchema($event.detail)" class="block w-full overflow-x-auto">
-          <table class="items-center bg-transparent w-full border-collapse">
-            <template x-for="namespace in namespaces">
-              <tbody>
-                <tr>
-                  <td colspan="4" class="px-6 align-middle text-xs whitespace-nowrap p-4">
-                    <div class="flex justify-between">
-                      <div>
-                        <h4 class="font-semibold text-sm text-gray-600" x-text="namespace.name"></h4>
-                      </div>
-                      <div class="flex space-x-4">
-                        <a class="text-gray-600 hover:opacity-50 cursor-pointer"
-                          @click="$store.modals.openSchemaModal(namespace.id)">Add Schema</a>
-                        <a class="text-red-600 hover:opacity-50 cursor-pointer"
-                          @click="confirm('Delete namespace?') && fetch($store.session.login + '/' + namespace.id, {method: 'DELETE'}).then(() => {remove(namespace.id)})">Delete</a>
-
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <template x-for="schema in namespace.schemas">
+          <div x-data="namespaces" @add-namespace.window="add($event.detail.id, $event.detail.name)"
+            @add-schema.window="addSchema($event.detail)" class="block w-full overflow-x-auto">
+            <table class="items-center bg-transparent w-full border-collapse">
+              <template x-for="namespace in namespaces">
+                <tbody>
                   <tr>
-                    <td
-                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      <a x-bind:href="schema.path" target="_blank" x-text="schema.id" class="cursor-pointer"></a>
-                    </td>
-                    <td
-                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      <span x-text="schema.name"></span> <span class="text-gray-300">(<span
-                          x-text="schema.version"></span>)</span>
-                    </td>
-                    <td
-                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">
-                      <label class="flex items-center">
-                        <input type="checkbox" class="form-checkbox" x-bind:checked="schema.access === 'PUBLIC'"
-                          @click="fetch(schema.path + '/access', {method: 'PUT', body: JSON.stringify({access: $event.target.checked ? 'PUBLIC' : 'PRIVATE'})})">
-                        <span class="ml-2 text-gray-600">Public</span>
-                      </label>
-                    </td>
-                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                      <div class="flex justify-end space-x-4">
-                        <a x-bind:href="schema.path + '.html'" target="_blank"
-                          class="text-gray-600 hover:opacity-50 cursor-pointer">SwaggerUI</a>
-                        <a x-bind:href="schema.path + '.json'" target="_blank"
-                          class="text-gray-600 hover:opacity-50 cursor-pointer">JSON</a>
-                        <a x-bind:href="schema.path + '.yaml'" target="_blank"
-                          class="text-gray-600 hover:opacity-50 cursor-pointer">YAML</a>
-                        <a class="text-red-600 hover:opacity-50 cursor-pointer"
-                          @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {removeSchema(schema.path)})">Delete</a>
+                    <td colspan="4" class="">
+                      <div class="flex justify-between items-center px-6  p-4 text-xs whitespace-nowrap">
+                        <div>
+                          <h4 class="font-semibold text-sm text-gray-600" x-text="namespace.name"></h4>
+                        </div>
+                        <div class="flex space-x-4 items-center">
+                          <button
+                            class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                            @click="$store.modals.openSchemaModal(namespace.id)">
+                            Add Schema
+                          </button>
+                          <div x-data="{show: false}" @click.away="show = false">
+                            <button @click="show = !show"
+                              class="p-2 border border-gray-200 rounded hover:opacity-50">…</button>
+                            <div x-show="show"
+                              class="absolute border border-gray-200 mt-2 py-2 px-4 bg-white rounded shadow-lg z-50"
+                              style="margin-left: -42px">
+                              <a class="text-red-600 hover:opacity-50 cursor-pointer"
+                                @click="confirm('Delete namespace?') && fetch($store.session.login + '/' + namespace.id, {method: 'DELETE'}).then(() => {remove(namespace.id)})">Delete</a>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </td>
                   </tr>
-                </template>
-              </tbody>
-            </template>
+                  <template x-for="schema in namespace.schemas">
+                    <tr>
+                      <td class="px-6 align-middle text-xs whitespace-nowrap p-2 text-left">
+                        <a x-bind:href="schema.path" target="_blank" x-text="schema.id" class="cursor-pointer"></a>
+                      </td>
+                      <td class="px-6 align-middle text-xs whitespace-nowrap p-2 text-left">
+                        <span x-text="schema.name"></span> <span class="text-gray-300">(<span
+                            x-text="schema.version"></span>)</span>
+                      </td>
+                      <td class="px-6 align-middle text-xs whitespace-nowrap p-2 text-left">
+                        <label class="flex items-center">
+                          <input type="checkbox" class="form-checkbox" x-bind:checked="schema.access === 'PUBLIC'"
+                            @click="fetch(schema.path + '/access', {method: 'PUT', body: JSON.stringify({access: $event.target.checked ? 'PUBLIC' : 'PRIVATE'})})">
+                          <span class="ml-2 text-gray-600">Public</span>
+                        </label>
+                      </td>
+                      <td class="px-6 align-middle text-xs whitespace-nowrap p-2">
+                        <div class="flex justify-end items-center space-x-4">
+                          <a x-bind:href="schema.path + '.html'" target="_blank"
+                            class="text-gray-600 hover:opacity-50 cursor-pointer">SwaggerUI</a>
+                          <a x-bind:href="schema.path + '.json'" target="_blank"
+                            class="text-gray-600 hover:opacity-50 cursor-pointer">JSON</a>
+                          <a x-bind:href="schema.path + '.yaml'" target="_blank"
+                            class="text-gray-600 hover:opacity-50 cursor-pointer">YAML</a>
+                          <div x-data="{show: false}" @click.away="show = false">
+                            <button @click="show = !show"
+                              class="p-2 border border-gray-200 rounded hover:opacity-50">…</button>
+                            <div x-show="show"
+                              class="absolute border border-gray-200 mt-2 py-2 px-4 bg-white rounded shadow-lg z-50"
+                              style="margin-left: -42px;">
+                              <a class="text-red-600 hover:opacity-50 cursor-pointer"
+                                @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {removeSchema(schema.path)})">Delete</a>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </template>
+                </tbody>
+              </template>
 
 
-          </table>
-        </div>
-      </div>
-    </template>
-
-    <template x-data x-if="!$store.session.exists()">
-      <div class="text-center">
-        <div class="text-gray-600">Sign in with GitHub to create, view, update and delete OpenAPI schemas.</div>
-        <div class="mt-8">
-          <a href="/login"
-            class="inline-block bg-white hover:bg-gray-100 text-gray-600 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-            <div class="float-left py-1 pr-3"><img src="https://unpkg.com/simple-icons@v5/icons/github.svg" class=""
-                width="16" height="16"></div>
-            <span>Sign In With GitHub</span>
-          </a>
-        </div>
-      </div>
-    </template>
-
-    <template x-data x-if="true" @keydown.escape.window="$store.modals.closeNamespaceModal()">
-      <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showNamespaceModal"
-        :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showNamespaceModal}">
-        <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
-          x-show="$store.modals.showNamespaceModal" @click.away="$store.modals.closeNamespaceModal()">
-
-          <div class="flex justify-between items-center pb-3">
-            <p class="font-sembold text-gray-600 font-semibold">Add Namespace</p>
-            <div class="cursor-pointer z-50" @click="$store.modals.closeNamespaceModal()">
-              <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                viewBox="0 0 18 18">
-                <path
-                  d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
-                </path>
-              </svg>
-            </div>
+            </table>
           </div>
-
-          <form x-data="namespaceForm()" @submit.prevent="submitData">
-            <div class="flex gap-x-5">
-              <div class="w-full">
-                <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
-                  ID
-                </label>
-                <input
-                  class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
-                  x-model="formData.id" id="id" type="text" placeholder="ID" required>
-              </div>
-              <div class="w-full">
-                <label class="block text-gray-600 text-sm font-bold mb-2" for="name">
-                  Name
-                </label>
-                <input
-                  class="appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
-                  x-model="formData.name" id="name" type="text" placeholder="Name">
-              </div>
-            </div>
-
-
-            <div class="flex justify-end pt-2">
-              <button
-                class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
-                type="submit" @click="$store.modals.closeNamespaceModal()">Create</button>
-            </div>
-          </form>
         </div>
-      </div>
-    </template>
+      </template>
 
-    <template x-data x-if="true" @keydown.escape.window="$store.modals.closeSchemaModal()">
-      <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showSchemaModal"
-        :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showSchemaModal}">
-        <div class="bg-white w-11/12 md:max-w-xl mx-auto rounded shadow-lg py-4 text-left px-6"
-          x-show="$store.modals.showSchemaModal" @click.away="$store.modals.closeSchemaModal()">
-
-          <div class="flex justify-between items-center pb-3">
-            <p class="font-sembold text-gray-600 font-semibold">Add Schema</p>
-            <div class="cursor-pointer z-50" @click="$store.modals.closeSchemaModal()">
-              <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                viewBox="0 0 18 18">
-                <path
-                  d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
-                </path>
-              </svg>
-            </div>
+      <template x-data x-if="!$store.session.exists()">
+        <div class="text-center">
+          <div class="text-gray-600">Sign in with GitHub to create, view, update and delete OpenAPI schemas.</div>
+          <div class="mt-8">
+            <a href="/login"
+              class="inline-block bg-white hover:bg-gray-100 text-gray-600 font-semibold py-2 px-4 border border-gray-400 rounded shadow-lg">
+              <div class="float-left py-1 pr-3"><img src="https://unpkg.com/simple-icons@v5/icons/github.svg" class=""
+                  width="16" height="16"></div>
+              <span>Sign In With GitHub</span>
+            </a>
           </div>
+        </div>
+      </template>
 
-          <form x-data="schemaForm()" @submit.prevent="submitData">
-            <div class="flex flex-col gap-y-5">
-              <div class="w-full">
-                <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
-                  ID
-                </label>
-                <input
-                  class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
-                  x-model="formData.id" id="id" type="text" placeholder="ID">
+      <template x-data x-if="true" @keydown.escape.window="$store.modals.closeNamespaceModal()">
+        <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showNamespaceModal"
+          :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showNamespaceModal}">
+          <div class="bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg py-4 text-left px-6"
+            x-show="$store.modals.showNamespaceModal" @click.away="$store.modals.closeNamespaceModal()">
+
+            <div class="flex justify-between items-center pb-3">
+              <p class="font-sembold text-gray-600 font-semibold">Add Namespace</p>
+              <div class="cursor-pointer z-50" @click="$store.modals.closeNamespaceModal()">
+                <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                  viewBox="0 0 18 18">
+                  <path
+                    d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                  </path>
+                </svg>
               </div>
-              <div class="w-full">
-                <label class="block text-gray-600 text-sm font-bold mb-2" for="schema">
-                  Schema
-                </label>
-                <textarea
-                  class="font-mono appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
-                  x-model="formData.schema" id="schema" rows="10"
-                  placeholder="Add OpenAPI or Swagger Schema in JSON format">
+            </div>
+
+            <form x-data="namespaceForm()" @submit.prevent="submitData">
+              <div class="flex gap-x-5">
+                <div class="w-full">
+                  <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
+                    ID
+                  </label>
+                  <input
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
+                    x-model="formData.id" id="id" type="text" placeholder="ID" required>
+                </div>
+                <div class="w-full">
+                  <label class="block text-gray-600 text-sm font-bold mb-2" for="name">
+                    Name
+                  </label>
+                  <input
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
+                    x-model="formData.name" id="name" type="text" placeholder="Name">
+                </div>
+              </div>
+
+
+              <div class="flex justify-end pt-2">
+                <button
+                  class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                  type="submit" @click="$store.modals.closeNamespaceModal()">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </template>
+
+      <template x-data x-if="true" @keydown.escape.window="$store.modals.closeSchemaModal()">
+        <div class="overflow-auto" style="background-color: rgba(0,0,0,0.5)" x-show="$store.modals.showSchemaModal"
+          :class="{ 'fixed inset-0 z-10 flex items-center justify-center': $store.modals.showSchemaModal}">
+          <div class="bg-white w-11/12 md:max-w-xl mx-auto rounded shadow-lg py-4 text-left px-6"
+            x-show="$store.modals.showSchemaModal" @click.away="$store.modals.closeSchemaModal()">
+
+            <div class="flex justify-between items-center pb-3">
+              <p class="font-sembold text-gray-600 font-semibold">Add Schema</p>
+              <div class="cursor-pointer z-50" @click="$store.modals.closeSchemaModal()">
+                <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                  viewBox="0 0 18 18">
+                  <path
+                    d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                  </path>
+                </svg>
+              </div>
+            </div>
+
+            <form x-data="schemaForm()" @submit.prevent="submitData">
+              <div class="flex flex-col gap-y-5">
+                <div class="w-full">
+                  <label class="block text-gray-600 text-sm font-bold mb-2" for="id">
+                    ID
+                  </label>
+                  <input
+                    class="appearance-none border rounded w-full py-2 px-3 text-gray-600 leading-tight focus:outline-none"
+                    x-model="formData.id" id="id" type="text" placeholder="ID">
+                </div>
+                <div class="w-full">
+                  <label class="block text-gray-600 text-sm font-bold mb-2" for="schema">
+                    Schema
+                  </label>
+                  <textarea
+                    class="font-mono appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
+                    x-model="formData.schema" id="schema" rows="10"
+                    placeholder="Add OpenAPI or Swagger Schema in JSON format">
               </textarea>
+                </div>
               </div>
-            </div>
 
 
-            <div class="flex justify-end pt-2">
-              <button
-                class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
-                type="submit" @click="$store.modals.closeSchemaModal()">Create</button>
-            </div>
-          </form>
+              <div class="flex justify-end pt-2">
+                <button
+                  class="bg-white hover:bg-gray-100 text-gray-600 text-xs font-semibold py-2 px-4 border border-gray-400 rounded"
+                  type="submit" @click="$store.modals.closeSchemaModal()">Create</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </template>
+
+    </main>
+
+    <footer x-data class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
+      <div x-show="$store.session.login">
+        <div class="mb-2">
+          <span class="text-base text-gray-600" x-text="$store.session.login"></span>
+        </div>
+        <div>
+          <a href="/logout" class="hover:text-black-600 hover:opacity-50">Logout</a><span> •
+          </span><span class="hover:text-red-600 hover:opacity-50 cursor-pointer"
+            @click="confirm('Delete account and all data?') && fetch('/' + $store.session.login, {method: 'DELETE'}).then(() => {window.location.reload(false) })">Delete
+            Account</span>
         </div>
       </div>
-    </template>
-
-  </main>
-
-  <footer x-data class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
-    <div x-show="$store.session.login">
-      <div class="mb-2">
-        <span class="text-base text-gray-600" x-text="$store.session.login"></span>
+      <div class="mt-5">
+        &copy; 2021
       </div>
-      <div>
-        <a href="/logout" class="hover:text-black-600 hover:opacity-50">Logout</a><span> •
-        </span><span class="hover:text-red-600 hover:opacity-50 cursor-pointer"
-          @click="confirm('Delete account and all data?') && fetch('/' + $store.session.login, {method: 'DELETE'}).then(() => {window.location.reload(false) })">Delete
-          Account</span>
-      </div>
-    </div>
-    <div class="mt-5">
-      &copy; 2021
-    </div>
-  </footer>
+    </footer>
+
+  </div>
 
   <script>
     function namespaceForm() {
