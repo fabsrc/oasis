@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OASIS - OpenAPI Schema Introspection</title>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slugify@1.6.1/slugify.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css" rel="stylesheet" type="text/css" />
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝</text></svg>">
@@ -207,7 +208,8 @@
                 </label>
                 <textarea
                   class="font-mono appearance-none border rounded w-full py-2 px-3 text-gray-600 mb-3 leading-tight focus:outline-none"
-                  x-model="formData.schema" id="schema" rows="10" placeholder="Add OpenAPI or Swagger Schema in JSON format">
+                  x-model="formData.schema" id="schema" rows="10"
+                  placeholder="Add OpenAPI or Swagger Schema in JSON format">
               </textarea>
               </div>
             </div>
@@ -228,7 +230,7 @@
   <footer x-data class="text-xs text-center text-gray-300 pt-8 pb-6 mt-16">
     <div x-show="$store.session.login">
       <div class="mb-2">
-        <span class="text-base" x-text="$store.session.login"></span>
+        <span class="text-base text-gray-600" x-text="$store.session.login"></span>
       </div>
       <div>
         <a href="/logout" class="hover:text-black-600 hover:opacity-50">Logout</a><span> •
@@ -263,13 +265,17 @@
             return
           }
 
-          fetch(`/${Alpine.store('session').login}/${this.formData.id}`, {
+          fetch(`/${Alpine.store('session').login}/${slugify(this.formData.id, {
+            lower: true,
+          })}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(this.formData)
-          }).then(() => {
-            this.$dispatch('add-namespace', this.formData)
-            this.reset()
+          }).then((res) => {
+            if (res.ok) {
+              this.$dispatch('add-namespace', this.formData)
+              this.reset()
+            }
           })
         }
       }
@@ -292,18 +298,22 @@
             return
           }
 
-          fetch(`/${Alpine.store('session').login}/${Alpine.store('modals').schemaNamespaceId}/${this.formData.id}`, {
+          fetch(`/${Alpine.store('session').login}/${Alpine.store('modals').schemaNamespaceId}/${slugify(this.formData.id, {
+            lower: true,
+          })}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: this.formData.schema
           }).then((res) => {
-            try {
-              const metadata = JSON.parse(res.headers.get('oasis-schema'))
-              this.$dispatch('add-schema', metadata)
-            } catch (err) {
-              console.error(err)
+            if (res.ok) {
+              try {
+                const metadata = JSON.parse(res.headers.get('oasis-schema'))
+                this.$dispatch('add-schema', metadata)
+              } catch (err) {
+                console.error(err)
+              }
+              this.reset()
             }
-            this.reset()
           })
         }
       }
