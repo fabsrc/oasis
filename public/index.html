@@ -163,7 +163,7 @@
                         <a x-bind:href="schema.path + '.yaml'" target="_blank"
                           class="text-gray-600 hover:opacity-50 cursor-pointer">YAML</a>
                         <a class="text-red-600 hover:opacity-50 cursor-pointer"
-                          @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {remove(schema.id)})">Delete</a>
+                          @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {removeSchema(schema.path)})">Delete</a>
                       </div>
                     </td>
                   </tr>
@@ -272,6 +272,10 @@
 
         remove(id) {
           this.namespaces = this.namespaces.filter(s => s.id !== id)
+        },
+
+        removeSchema(path) {
+          this.namespaces = this.namespaces.map(ns => ({ ...ns, schemas: ns.schemas.filter(s => s.path !== path) }))
         }
       }))
     })
