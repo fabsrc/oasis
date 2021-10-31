@@ -356,6 +356,8 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
     <head>
     <title>${schemaData.info.title} (${schemaData.info.version})</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.52.3/swagger-ui.min.css" integrity="sha512-dFuohqVso7kItN2ft/glXFWpU3ZKdGsmV6HL3l7Vxu39syv/mfnp+HKoGwMUtmrlOapINWzSlIHiiC3q0CZ/GA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏝</text></svg>">
     </head>
     <body>
       <div id="swagger-ui"></div>
@@ -371,7 +373,7 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
     </html>
     `,
       {
-        'content-type': 'text/html',
+        'content-type': 'text/html; charset=utf-8',
         ...(metadata && {
           [SCHEMA_METADATA_HEADER_NAME]: JSON.stringify(metadata),
         }),
