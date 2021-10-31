@@ -354,7 +354,7 @@ API.add('GET', '/:user/:namespace/:schema', async (request, response) => {
       `
     <html>
     <head>
-    <title>Schema</title>
+    <title>${schemaData.info.title} (${schemaData.info.version})</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.52.3/swagger-ui.min.css" integrity="sha512-dFuohqVso7kItN2ft/glXFWpU3ZKdGsmV6HL3l7Vxu39syv/mfnp+HKoGwMUtmrlOapINWzSlIHiiC3q0CZ/GA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     </head>
     <body>
