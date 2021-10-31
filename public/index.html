@@ -71,12 +71,11 @@
                             @click="$store.modals.openSchemaModal(namespace.id)">
                             Add Schema
                           </button>
-                          <div x-data="{show: false}" @click.away="show = false">
+                          <div class="relative" x-data="{show: false}" @click.away="show = false">
                             <button @click="show = !show"
                               class="p-2 border border-gray-200 rounded hover:opacity-50">…</button>
                             <div x-show="show"
-                              class="absolute border border-gray-200 mt-2 py-2 px-4 bg-white rounded shadow-lg z-50"
-                              style="margin-left: -42px">
+                              class="absolute right-full top-0 border border-gray-200 mr-2 py-2 px-4 bg-white rounded shadow-lg z-50">
                               <a class="text-red-600 hover:opacity-50 cursor-pointer"
                                 @click="confirm('Delete namespace?') && fetch($store.session.login + '/' + namespace.id, {method: 'DELETE'}).then(() => {remove(namespace.id)})">Delete</a>
                             </div>
@@ -109,12 +108,11 @@
                             class="text-gray-600 hover:opacity-50 cursor-pointer">JSON</a>
                           <a x-bind:href="schema.path + '.yaml'" target="_blank"
                             class="text-gray-600 hover:opacity-50 cursor-pointer">YAML</a>
-                          <div x-data="{show: false}" @click.away="show = false">
+                          <div class="relative" x-data="{show: false}" @click.away="show = false">
                             <button @click="show = !show"
                               class="p-2 border border-gray-200 rounded hover:opacity-50">…</button>
                             <div x-show="show"
-                              class="absolute border border-gray-200 mt-2 py-2 px-4 bg-white rounded shadow-lg z-50"
-                              style="margin-left: -42px;">
+                              class="absolute right-full top-0 border border-gray-200 mr-2 py-2 px-4 bg-white rounded shadow-lg z-50">
                               <a class="text-red-600 hover:opacity-50 cursor-pointer"
                                 @click="confirm('Delete schema?') && fetch(schema.path, {method: 'DELETE'}).then(() => {removeSchema(schema.path)})">Delete</a>
                             </div>
